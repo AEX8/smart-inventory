@@ -1,0 +1,62 @@
+services:
+  backend:
+    build: ./backend
+    container_name: inventory_backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/inventory_db
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=local_dev_secret_change_in_prod
+      - ACCESS_TOKEN_EXPIRE_MINUTES=60
+      - ENVIRONMENT=development
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  db:
+    image: postgres:16-alpine
+    container_name: inventory_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: inventory_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: inventory_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: inventory_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:
+  redis_data:
