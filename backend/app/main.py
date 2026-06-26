@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routers import auth
-from app.routers import auth, inventory
+from app.routers import auth, inventory, deliveries
  
 app = FastAPI(
     title="Smart Inventory & Delivery Tracker",
@@ -20,8 +20,8 @@ app.add_middleware(
  
 
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
-app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(inventory.router, prefix="/inventory", tags=["inventory"])
+app.include_router(deliveries.router, prefix="/deliveries", tags=["deliveries"])
 
 # Uncomment as they're built
 # from app.routers import deliveries, forecast
