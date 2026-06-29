@@ -3,6 +3,7 @@ import {
   LayoutDashboard,
   Package,
   Truck,
+  Building2,
   LogOut,
 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
@@ -12,6 +13,7 @@ const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/inventory', icon: Package, label: 'Inventory' },
   { to: '/deliveries', icon: Truck, label: 'Deliveries' },
+  { to: '/suppliers', icon: Building2, label: 'Suppliers' },
 ]
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
