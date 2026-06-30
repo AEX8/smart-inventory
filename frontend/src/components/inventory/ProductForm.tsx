@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { inventoryApi } from '../../api/inventory'
+import { suppliersApi } from '../../api/suppliers'
 import { Input, Select, Button } from '../ui/FormFields'
 
 const REASONS = [
@@ -23,13 +24,28 @@ const ProductForm = ({ onClose }: ProductFormProps) => {
     category: '',
     initial_stock: 0,
     threshold: 10,
+    supplier_id: '',
   })
   const [error, setError] = useState('')
 
+  const { data: suppliers } = useQuery({
+    queryKey: ['suppliers'],
+    queryFn: () => suppliersApi.list(),
+  })
+
+  const supplierOptions = suppliers?.items.map((s) => ({
+    value: s.id,
+    label: `${s.name} (${s.lead_time_days}d lead time)`,
+  })) ?? []
+
   const mutation = useMutation({
     mutationFn: () => inventoryApi.create({
-      ...form,
+      name: form.name,
+      sku: form.sku,
       category: form.category || undefined,
+      initial_stock: form.initial_stock,
+      threshold: form.threshold,
+      supplier_id: form.supplier_id || undefined,
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inventory'] })
@@ -82,6 +98,13 @@ const ProductForm = ({ onClose }: ProductFormProps) => {
           onChange={(e) => set('threshold', Number(e.target.value))}
         />
       </div>
+      <Select
+        label="Supplier (optional)"
+        value={form.supplier_id}
+        onChange={(e) => set('supplier_id', e.target.value)}
+        options={supplierOptions}
+        placeholder="No supplier"
+      />
 
       {error && <p className="text-xs text-red-500">{error}</p>}
 
