@@ -39,6 +39,11 @@ const Deliveries = () => {
     placeholderData: (prev) => prev,
   })
 
+  // always pull from live cache so slide-over reflects status updates immediately
+  const liveDelivery = selected
+    ? data?.items.find((d) => d.id === selected.id) ?? selected
+    : null
+
   const deleteMutation = useMutation({
     mutationFn: deliveriesApi.delete,
     onSuccess: () => {
@@ -173,47 +178,47 @@ const Deliveries = () => {
 
       {/* Detail slide-over */}
       <SlideOver
-        open={!!selected && !showStatusModal}
+        open={!!liveDelivery && !showStatusModal}
         onClose={() => setSelected(null)}
         title="Delivery details"
       >
-        {selected && (
+        {liveDelivery && (
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="text-xs text-gray-400">Product</p>
-                <p className="text-sm font-medium text-gray-900 mt-0.5">{selected.product_name ?? '—'}</p>
+                <p className="text-sm font-medium text-gray-900 mt-0.5">{liveDelivery.product_name ?? '—'}</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="text-xs text-gray-400">Quantity</p>
-                <p className="text-sm font-medium text-gray-900 mt-0.5">{selected.quantity} units</p>
+                <p className="text-sm font-medium text-gray-900 mt-0.5">{liveDelivery.quantity} units</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="text-xs text-gray-400">Status</p>
                 <div className="mt-1">
-                  <Badge variant={deliveryStatusBadge(selected.status).variant}>
-                    {deliveryStatusBadge(selected.status).label}
+                  <Badge variant={deliveryStatusBadge(liveDelivery.status).variant}>
+                    {deliveryStatusBadge(liveDelivery.status).label}
                   </Badge>
                 </div>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="text-xs text-gray-400">ETA</p>
                 <p className="text-sm font-medium text-gray-900 mt-0.5">
-                  {selected.eta ? new Date(selected.eta).toLocaleDateString() : '—'}
+                  {liveDelivery.eta ? new Date(liveDelivery.eta).toLocaleDateString() : '—'}
                 </p>
               </div>
             </div>
 
-            {selected.notes && (
+            {liveDelivery.notes && (
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="text-xs text-gray-400 mb-1">Notes</p>
-                <p className="text-sm text-gray-700">{selected.notes}</p>
+                <p className="text-sm text-gray-700">{liveDelivery.notes}</p>
               </div>
             )}
 
             <div className="text-xs text-gray-400 space-y-1">
-              <p>Created {new Date(selected.created_at).toLocaleString()}</p>
-              <p>Updated {new Date(selected.updated_at).toLocaleString()}</p>
+              <p>Created {new Date(liveDelivery.created_at).toLocaleString()}</p>
+              <p>Updated {new Date(liveDelivery.updated_at).toLocaleString()}</p>
             </div>
 
             {user?.role !== 'driver' && (
@@ -231,9 +236,9 @@ const Deliveries = () => {
 
       {/* Status update modal */}
       <Modal open={showStatusModal} onClose={() => setShowStatusModal(false)} title="Update status">
-        {selected && (
+        {liveDelivery && (
           <StatusUpdateForm
-            delivery={selected}
+            delivery={liveDelivery}
             onClose={() => setShowStatusModal(false)}
           />
         )}

@@ -39,10 +39,15 @@ const Inventory = () => {
     placeholderData: (prev) => prev,
   })
 
+  // always pull from live cache so slide-over reflects updates immediately
+  const liveProduct = selectedProduct
+    ? data?.items.find((p) => p.id === selectedProduct.id) ?? selectedProduct
+    : null
+
   const { data: movements } = useQuery({
-    queryKey: ['movements', selectedProduct?.id],
-    queryFn: () => inventoryApi.movements(selectedProduct!.id),
-    enabled: !!selectedProduct,
+    queryKey: ['movements', liveProduct?.id],
+    queryFn: () => inventoryApi.movements(liveProduct!.id),
+    enabled: !!liveProduct,
   })
 
   const deleteMutation = useMutation({
@@ -187,28 +192,28 @@ const Inventory = () => {
 
       {/* Product detail slide-over */}
       <SlideOver
-        open={!!selectedProduct && !showAdjustModal}
+        open={!!liveProduct && !showAdjustModal}
         onClose={() => setSelectedProduct(null)}
-        title={selectedProduct?.name ?? ''}
+        title={liveProduct?.name ?? ''}
       >
-        {selectedProduct && (
+        {liveProduct && (
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="text-xs text-gray-400">SKU</p>
-                <p className="text-sm font-mono font-medium text-gray-900 mt-0.5">{selectedProduct.sku}</p>
+                <p className="text-sm font-mono font-medium text-gray-900 mt-0.5">{liveProduct.sku}</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="text-xs text-gray-400">Category</p>
-                <p className="text-sm font-medium text-gray-900 mt-0.5">{selectedProduct.category ?? '—'}</p>
+                <p className="text-sm font-medium text-gray-900 mt-0.5">{liveProduct.category ?? '—'}</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="text-xs text-gray-400">Current stock</p>
-                <p className="text-sm font-medium text-gray-900 mt-0.5">{selectedProduct.quantity} units</p>
+                <p className="text-sm font-medium text-gray-900 mt-0.5">{liveProduct.quantity} units</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="text-xs text-gray-400">Reorder threshold</p>
-                <p className="text-sm font-medium text-gray-900 mt-0.5">{selectedProduct.threshold} units</p>
+                <p className="text-sm font-medium text-gray-900 mt-0.5">{liveProduct.threshold} units</p>
               </div>
             </div>
 
@@ -247,11 +252,11 @@ const Inventory = () => {
 
       {/* Stock adjust modal */}
       <Modal open={showAdjustModal} onClose={() => setShowAdjustModal(false)} title="Adjust stock">
-        {selectedProduct && (
+        {liveProduct && (
           <StockAdjustForm
-            productId={selectedProduct.id}
-            productName={selectedProduct.name}
-            currentStock={selectedProduct.quantity}
+            productId={liveProduct.id}
+            productName={liveProduct.name}
+            currentStock={liveProduct.quantity}
             onClose={() => setShowAdjustModal(false)}
           />
         )}
