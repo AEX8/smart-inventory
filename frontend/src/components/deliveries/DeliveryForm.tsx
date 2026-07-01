@@ -51,8 +51,13 @@ export const DeliveryForm = ({ onClose }: DeliveryFormProps) => {
     label: `${p.name} (${p.sku})`,
   })) ?? []
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    mutation.mutate()
+  }
+
   return (
-    <div className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <Select
         label="Product"
         value={form.product_id}
@@ -84,9 +89,9 @@ export const DeliveryForm = ({ onClose }: DeliveryFormProps) => {
       {error && <p className="text-xs text-red-500">{error}</p>}
 
       <div className="flex gap-2 pt-2">
-        <Button variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
+        <Button type="button" variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
         <Button
-          onClick={() => mutation.mutate()}
+          type="submit"
           loading={mutation.isPending}
           disabled={!form.product_id || form.quantity < 1}
           className="flex-1"
@@ -94,7 +99,7 @@ export const DeliveryForm = ({ onClose }: DeliveryFormProps) => {
           Create delivery
         </Button>
       </div>
-    </div>
+    </form>
   )
 }
 
@@ -135,13 +140,18 @@ export const StatusUpdateForm = ({ delivery, onClose }: StatusUpdateFormProps) =
           This delivery is <span className="font-medium text-gray-900">{delivery.status}</span> —
           a terminal status and cannot be updated further.
         </p>
-        <Button variant="secondary" onClick={onClose} className="w-full">Close</Button>
+        <Button type="button" variant="secondary" onClick={onClose} className="w-full">Close</Button>
       </div>
     )
   }
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    mutation.mutate()
+  }
+
   return (
-    <div className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="bg-gray-50 rounded-lg px-4 py-3">
         <p className="text-xs text-gray-500">Updating delivery for</p>
         <p className="text-sm font-medium text-gray-900 mt-0.5">{delivery.product_name ?? '—'}</p>
@@ -166,9 +176,9 @@ export const StatusUpdateForm = ({ delivery, onClose }: StatusUpdateFormProps) =
       {error && <p className="text-xs text-red-500">{error}</p>}
 
       <div className="flex gap-2 pt-2">
-        <Button variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
+        <Button type="button" variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
         <Button
-          onClick={() => mutation.mutate()}
+          type="submit"
           loading={mutation.isPending}
           disabled={!status}
           className="flex-1"
@@ -176,6 +186,6 @@ export const StatusUpdateForm = ({ delivery, onClose }: StatusUpdateFormProps) =
           Update status
         </Button>
       </div>
-    </div>
+    </form>
   )
 }

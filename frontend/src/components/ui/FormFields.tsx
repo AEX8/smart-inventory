@@ -57,7 +57,13 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 }
 
 export const Button = ({
-  variant = 'primary', size = 'md', loading, children, className, ...props
+  variant = 'primary',
+  size = 'md',
+  loading,
+  children,
+  className,
+  type = 'button',
+  ...props
 }: ButtonProps) => {
   const variants = {
     primary: 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300',
@@ -70,6 +76,7 @@ export const Button = ({
   }
   return (
     <button
+      type={type}
       className={cn(
         'rounded-lg font-medium transition-colors disabled:cursor-not-allowed',
         variants[variant],

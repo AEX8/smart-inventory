@@ -60,8 +60,13 @@ const ProductForm = ({ onClose }: ProductFormProps) => {
   const set = (field: string, value: string | number) =>
     setForm((f) => ({ ...f, [field]: value }))
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    mutation.mutate()
+  }
+
   return (
-    <div className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <Input
         label="Product name"
         value={form.name}
@@ -109,9 +114,9 @@ const ProductForm = ({ onClose }: ProductFormProps) => {
       {error && <p className="text-xs text-red-500">{error}</p>}
 
       <div className="flex gap-2 pt-2">
-        <Button variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
+        <Button type="button" variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
         <Button
-          onClick={() => mutation.mutate()}
+          type="submit"
           loading={mutation.isPending}
           disabled={!form.name || !form.sku}
           className="flex-1"
@@ -119,7 +124,7 @@ const ProductForm = ({ onClose }: ProductFormProps) => {
           Add product
         </Button>
       </div>
-    </div>
+    </form>
   )
 }
 
@@ -156,8 +161,13 @@ export const StockAdjustForm = ({
 
   const newStock = currentStock + (Number(delta) || 0)
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    mutation.mutate()
+  }
+
   return (
-    <div className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="bg-gray-50 rounded-lg px-4 py-3">
         <p className="text-xs text-gray-500">Adjusting stock for</p>
         <p className="text-sm font-medium text-gray-900 mt-0.5">{productName}</p>
@@ -171,7 +181,6 @@ export const StockAdjustForm = ({
         onChange={(e) => setDelta(e.target.value)}
         placeholder="Enter the amount"
       />
-
 
       <Select
         label="Reason"
@@ -189,9 +198,9 @@ export const StockAdjustForm = ({
       {error && <p className="text-xs text-red-500">{error}</p>}
 
       <div className="flex gap-2 pt-2">
-        <Button variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
+        <Button type="button" variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
         <Button
-          onClick={() => mutation.mutate()}
+          type="submit"
           loading={mutation.isPending}
           disabled={delta === '' || Number(delta) === 0 || newStock < 0}
           className="flex-1"
@@ -199,6 +208,6 @@ export const StockAdjustForm = ({
           Apply
         </Button>
       </div>
-    </div>
+    </form>
   )
 }

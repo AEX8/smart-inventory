@@ -40,8 +40,13 @@ const SupplierForm = ({
     onError: (err: any) => setError(err.response?.data?.detail ?? 'Something went wrong'),
   })
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    mutation.mutate()
+  }
+
   return (
-    <div className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <Input
         label="Supplier name"
         value={form.name}
@@ -65,9 +70,9 @@ const SupplierForm = ({
       />
       {error && <p className="text-xs text-red-500">{error}</p>}
       <div className="flex gap-2 pt-2">
-        <Button variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
+        <Button type="button" variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
         <Button
-          onClick={() => mutation.mutate()}
+          type="submit"
           loading={mutation.isPending}
           disabled={!form.name}
           className="flex-1"
@@ -75,7 +80,7 @@ const SupplierForm = ({
           {initial ? 'Save changes' : 'Add supplier'}
         </Button>
       </div>
-    </div>
+    </form>
   )
 }
 
