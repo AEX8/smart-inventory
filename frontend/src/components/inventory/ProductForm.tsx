@@ -137,12 +137,12 @@ export const StockAdjustForm = ({
   productId, productName, currentStock, onClose
 }: StockAdjustFormProps) => {
   const queryClient = useQueryClient()
-  const [delta, setDelta] = useState<number>(0)
+  const [delta, setDelta] = useState<string>('')
   const [reason, setReason] = useState('restock')
   const [error, setError] = useState('')
 
   const mutation = useMutation({
-    mutationFn: () => inventoryApi.adjust(productId, delta, reason),
+    mutationFn: () => inventoryApi.adjust(productId, Number(delta), reason),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inventory'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard-summary'] })
@@ -154,7 +154,7 @@ export const StockAdjustForm = ({
     },
   })
 
-  const newStock = currentStock + delta
+  const newStock = currentStock + (Number(delta) || 0)
 
   return (
     <div className="space-y-4">
@@ -168,9 +168,10 @@ export const StockAdjustForm = ({
         label="Adjustment (use negative to reduce)"
         type="number"
         value={delta}
-        onChange={(e) => setDelta(Number(e.target.value))}
-        placeholder="+50 or -20"
+        onChange={(e) => setDelta(e.target.value)}
+        placeholder="Enter the amount"
       />
+
 
       <Select
         label="Reason"
@@ -179,7 +180,7 @@ export const StockAdjustForm = ({
         options={REASONS}
       />
 
-      {delta !== 0 && (
+      {delta !== '' && Number(delta) !== 0 && (
         <div className={`text-xs px-3 py-2 rounded-lg ${newStock < 0 ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
           New stock will be: <span className="font-semibold">{newStock} units</span>
         </div>
@@ -192,7 +193,7 @@ export const StockAdjustForm = ({
         <Button
           onClick={() => mutation.mutate()}
           loading={mutation.isPending}
-          disabled={delta === 0 || newStock < 0}
+          disabled={delta === '' || Number(delta) === 0 || newStock < 0}
           className="flex-1"
         >
           Apply

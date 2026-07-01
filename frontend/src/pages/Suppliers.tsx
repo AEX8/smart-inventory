@@ -103,7 +103,7 @@ const Suppliers = () => {
           <h1 className="text-xl font-semibold text-gray-900">Suppliers</h1>
           <p className="text-sm text-gray-500 mt-0.5">{data?.total ?? 0} suppliers</p>
         </div>
-        {user?.role !== 'driver' && (
+        {user?.role === 'admin' && (
           <Button onClick={() => { setEditing(null); setShowModal(true) }}>
             <span className="flex items-center gap-1.5">
               <Plus size={14} />
@@ -130,7 +130,7 @@ const Suppliers = () => {
               <th className="text-left px-5 py-3 font-medium">Contact email</th>
               <th className="text-left px-5 py-3 font-medium">Lead time</th>
               <th className="text-left px-5 py-3 font-medium">Added</th>
-              {user?.role !== 'driver' && (
+              {user?.role === 'admin' && (
                 <th className="text-left px-5 py-3 font-medium">Actions</th>
               )}
             </tr>
@@ -154,7 +154,7 @@ const Suppliers = () => {
                 <td className="px-5 py-3 text-gray-400 text-xs">
                   {new Date(s.created_at).toLocaleDateString()}
                 </td>
-                {user?.role !== 'driver' && (
+                {user?.role === 'admin' && (
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-2">
                       <button
@@ -163,14 +163,12 @@ const Suppliers = () => {
                       >
                         <Pencil size={13} />
                       </button>
-                      {user?.role === 'admin' && (
-                        <button
-                          onClick={() => deleteMutation.mutate(s.id)}
-                          className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded hover:bg-red-50"
-                        >
-                          <Trash2 size={13} />
-                        </button>
-                      )}
+                      <button
+                        onClick={() => deleteMutation.mutate(s.id)}
+                        className="text-gray-400 hover:text-red-500 transition-colors p-1 rounded hover:bg-red-50"
+                      >
+                        <Trash2 size={13} />
+                      </button>
                     </div>
                   </td>
                 )}
