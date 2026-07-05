@@ -34,6 +34,7 @@ export const inventoryApi = {
     name?: string
     category?: string
     threshold?: number
+    supplier_id?: string | null
   }): Promise<ProductOut> => {
     const res = await api.put(`/inventory/products/${id}`, data)
     return res.data

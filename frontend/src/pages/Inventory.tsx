@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Search, Trash2 } from 'lucide-react'
+import { Plus, Search, Trash2, Pencil } from 'lucide-react'
 import { inventoryApi } from '../api/inventory'
 import { useAuth } from '../hooks/useAuth'
 import type { ProductOut } from '../types/product'
@@ -8,7 +8,7 @@ import Badge, { stockStatusBadge } from '../components/ui/Badge'
 import SlideOver from '../components/ui/SlideOver'
 import Modal from '../components/ui/Modal'
 import { Button } from '../components/ui/FormFields'
-import ProductForm, { StockAdjustForm } from '../components/inventory/ProductForm'
+import ProductForm, { StockAdjustForm, EditProductForm } from '../components/inventory/ProductForm'
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All statuses' },
@@ -27,6 +27,7 @@ const Inventory = () => {
   const [selectedProduct, setSelectedProduct] = useState<ProductOut | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
   const [showAdjustModal, setShowAdjustModal] = useState(false)
+  const [showEditForm, setShowEditForm] = useState(false)
 
   const { data, isLoading } = useQuery({
     queryKey: ['inventory', { search, stockStatus, page }],
@@ -39,7 +40,6 @@ const Inventory = () => {
     placeholderData: (prev) => prev,
   })
 
-  // always pull from live cache so slide-over reflects updates immediately
   const liveProduct = selectedProduct
     ? data?.items.find((p) => p.id === selectedProduct.id) ?? selectedProduct
     : null
@@ -56,6 +56,7 @@ const Inventory = () => {
       queryClient.invalidateQueries({ queryKey: ['inventory'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard-summary'] })
       setSelectedProduct(null)
+      setShowEditForm(false)
     },
   })
 
@@ -136,7 +137,7 @@ const Inventory = () => {
               return (
                 <tr
                   key={product.id}
-                  onClick={() => setSelectedProduct(product)}
+                  onClick={() => { setSelectedProduct(product); setShowEditForm(false) }}
                   className="hover:bg-gray-50 transition-colors cursor-pointer"
                 >
                   <td className="px-5 py-3 font-medium text-gray-900">{product.name}</td>
@@ -193,60 +194,94 @@ const Inventory = () => {
       {/* Product detail slide-over */}
       <SlideOver
         open={!!liveProduct && !showAdjustModal}
-        onClose={() => setSelectedProduct(null)}
-        title={liveProduct?.name ?? ''}
+        onClose={() => { setSelectedProduct(null); setShowEditForm(false) }}
+        title={showEditForm ? `Edit — ${liveProduct?.name}` : liveProduct?.name ?? ''}
       >
         {liveProduct && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-gray-50 rounded-lg p-3">
-                <p className="text-xs text-gray-400">SKU</p>
-                <p className="text-sm font-mono font-medium text-gray-900 mt-0.5">{liveProduct.sku}</p>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-3">
-                <p className="text-xs text-gray-400">Category</p>
-                <p className="text-sm font-medium text-gray-900 mt-0.5">{liveProduct.category ?? '—'}</p>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-3">
-                <p className="text-xs text-gray-400">Current stock</p>
-                <p className="text-sm font-medium text-gray-900 mt-0.5">{liveProduct.quantity} units</p>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-3">
-                <p className="text-xs text-gray-400">Reorder threshold</p>
-                <p className="text-sm font-medium text-gray-900 mt-0.5">{liveProduct.threshold} units</p>
-              </div>
-            </div>
-
-            {user?.role !== 'driver' && (
-              <Button onClick={() => setShowAdjustModal(true)} variant="secondary" className="w-full">
-                Adjust stock
-              </Button>
-            )}
-
-            <div>
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                Movement history
-              </h3>
-              <div className="space-y-2">
-                {!movements?.length && (
-                  <p className="text-xs text-gray-400">No movements recorded</p>
-                )}
-                {movements?.map((m) => (
-                  <div key={m.id} className="flex items-center justify-between py-2 border-b border-gray-50">
-                    <div>
-                      <p className="text-xs font-medium text-gray-700 capitalize">
-                        {m.reason.replace('_', ' ')}
-                      </p>
-                      <p className="text-xs text-gray-400">{new Date(m.created_at).toLocaleDateString()}</p>
-                    </div>
-                    <span className={`text-sm font-semibold ${m.delta > 0 ? 'text-green-600' : 'text-red-500'}`}>
-                      {m.delta > 0 ? '+' : ''}{m.delta}
-                    </span>
+          <>
+            {showEditForm ? (
+              <EditProductForm
+                product={liveProduct}
+                onClose={() => setShowEditForm(false)}
+              />
+            ) : (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-400">SKU</p>
+                    <p className="text-sm font-mono font-medium text-gray-900 mt-0.5">{liveProduct.sku}</p>
                   </div>
-                ))}
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-400">Category</p>
+                    <p className="text-sm font-medium text-gray-900 mt-0.5">{liveProduct.category ?? '—'}</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-400">Current stock</p>
+                    <p className="text-sm font-medium text-gray-900 mt-0.5">{liveProduct.quantity} units</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-400">Reorder threshold</p>
+                    <p className="text-sm font-medium text-gray-900 mt-0.5">{liveProduct.threshold} units</p>
+                  </div>
+                  {liveProduct.supplier && (
+                    <div className="bg-gray-50 rounded-lg p-3 col-span-2">
+                      <p className="text-xs text-gray-400">Supplier</p>
+                      <p className="text-sm font-medium text-gray-900 mt-0.5">{liveProduct.supplier.name}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{liveProduct.supplier.lead_time_days}d lead time</p>
+                    </div>
+                  )}
+                </div>
+
+                {user?.role !== 'driver' && (
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      onClick={() => setShowEditForm(true)}
+                      variant="secondary"
+                      className="flex-1"
+                    >
+                      <span className="flex items-center justify-center gap-1.5">
+                        <Pencil size={13} />
+                        Edit
+                      </span>
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => setShowAdjustModal(true)}
+                      variant="secondary"
+                      className="flex-1"
+                    >
+                      Adjust stock
+                    </Button>
+                  </div>
+                )}
+
+                <div>
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                    Movement history
+                  </h3>
+                  <div className="space-y-2">
+                    {!movements?.length && (
+                      <p className="text-xs text-gray-400">No movements recorded</p>
+                    )}
+                    {movements?.map((m) => (
+                      <div key={m.id} className="flex items-center justify-between py-2 border-b border-gray-50">
+                        <div>
+                          <p className="text-xs font-medium text-gray-700 capitalize">
+                            {m.reason.replace('_', ' ')}
+                          </p>
+                          <p className="text-xs text-gray-400">{new Date(m.created_at).toLocaleDateString()}</p>
+                        </div>
+                        <span className={`text-sm font-semibold ${m.delta > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                          {m.delta > 0 ? '+' : ''}{m.delta}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            )}
+          </>
         )}
       </SlideOver>
 

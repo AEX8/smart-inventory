@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { inventoryApi } from '../../api/inventory'
 import { suppliersApi } from '../../api/suppliers'
 import { Input, Select, Button } from '../ui/FormFields'
+import type { ProductOut } from '../../types/product'
 
 const REASONS = [
   { value: 'restock', label: 'Restock' },
@@ -206,6 +207,101 @@ export const StockAdjustForm = ({
           className="flex-1"
         >
           Apply
+        </Button>
+      </div>
+    </form>
+  )
+}
+
+type EditProductFormProps = {
+  product: ProductOut
+  onClose: () => void
+}
+
+export const EditProductForm = ({ product, onClose }: EditProductFormProps) => {
+  const queryClient = useQueryClient()
+  const [form, setForm] = useState({
+    name: product.name,
+    category: product.category ?? '',
+    threshold: product.threshold,
+    supplier_id: product.supplier_id ?? '',
+  })
+  const [error, setError] = useState('')
+
+  const { data: suppliers } = useQuery({
+    queryKey: ['suppliers'],
+    queryFn: () => suppliersApi.list(),
+  })
+
+  const supplierOptions = suppliers?.items.map((s) => ({
+    value: s.id,
+    label: `${s.name} (${s.lead_time_days}d lead time)`,
+  })) ?? []
+
+  const mutation = useMutation({
+    mutationFn: () => inventoryApi.update(product.id, {
+      name: form.name,
+      category: form.category || undefined,
+      threshold: form.threshold,
+      supplier_id: form.supplier_id || undefined,
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventory'] })
+      onClose()
+    },
+    onError: (err: any) => {
+      setError(err.response?.data?.detail ?? 'Something went wrong')
+    },
+  })
+
+  const set = (field: string, value: string | number) =>
+    setForm((f) => ({ ...f, [field]: value }))
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    mutation.mutate()
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <Input
+        label="Product name"
+        value={form.name}
+        onChange={(e) => set('name', e.target.value)}
+        required
+      />
+      <Input
+        label="Category"
+        value={form.category}
+        onChange={(e) => set('category', e.target.value)}
+        placeholder="e.g. Electronics"
+      />
+      <Input
+        label="Reorder threshold"
+        type="number"
+        min={1}
+        value={form.threshold}
+        onChange={(e) => set('threshold', Number(e.target.value))}
+      />
+      <Select
+        label="Supplier (optional)"
+        value={form.supplier_id}
+        onChange={(e) => set('supplier_id', e.target.value)}
+        options={supplierOptions}
+        placeholder="No supplier"
+      />
+
+      {error && <p className="text-xs text-red-500">{error}</p>}
+
+      <div className="flex gap-2 pt-2">
+        <Button type="button" variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
+        <Button
+          type="submit"
+          loading={mutation.isPending}
+          disabled={!form.name}
+          className="flex-1"
+        >
+          Save changes
         </Button>
       </div>
     </form>
