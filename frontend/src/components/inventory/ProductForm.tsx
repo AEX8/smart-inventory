@@ -223,7 +223,7 @@ export const EditProductForm = ({ product, onClose }: EditProductFormProps) => {
   const [form, setForm] = useState({
     name: product.name,
     category: product.category ?? '',
-    threshold: product.threshold,
+    threshold: product.threshold.toString(),
     supplier_id: product.supplier_id ?? '',
   })
   const [error, setError] = useState('')
@@ -242,7 +242,7 @@ export const EditProductForm = ({ product, onClose }: EditProductFormProps) => {
     mutationFn: () => inventoryApi.update(product.id, {
       name: form.name,
       category: form.category || undefined,
-      threshold: form.threshold,
+      threshold: Number(form.threshold),
       supplier_id: form.supplier_id || undefined,
     }),
     onSuccess: () => {
@@ -281,7 +281,7 @@ export const EditProductForm = ({ product, onClose }: EditProductFormProps) => {
         type="number"
         min={1}
         value={form.threshold}
-        onChange={(e) => set('threshold', Number(e.target.value))}
+        onChange={(e) => set('threshold', e.target.value)}
       />
       <Select
         label="Supplier (optional)"
