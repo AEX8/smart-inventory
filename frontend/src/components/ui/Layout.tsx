@@ -5,6 +5,7 @@ import {
   Truck,
   Building2,
   LogOut,
+  BarChart2
 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import { cn } from '../../utils/cn'
@@ -14,6 +15,7 @@ const navItems = [
   { to: '/inventory', icon: Package, label: 'Inventory' },
   { to: '/deliveries', icon: Truck, label: 'Deliveries' },
   { to: '/suppliers', icon: Building2, label: 'Suppliers' },
+  { to: '/analytics', icon: BarChart2, label: 'Analytics' },
 ]
 
 const Layout = ({ children }: { children: React.ReactNode }) => {

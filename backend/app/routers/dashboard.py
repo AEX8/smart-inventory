@@ -5,6 +5,7 @@ from app.core.deps import get_current_user
 from app.models.user import User
 from app.schemas.dashboard import DashboardSummary
 from app.services import dashboard as svc
+from app.schemas.dashboard import DashboardSummary, AnalyticsData
 
 router = APIRouter()
 
@@ -15,3 +16,10 @@ def get_summary(
     _: User = Depends(get_current_user),
 ):
     return svc.get_summary(db)
+
+@router.get("/analytics", response_model=AnalyticsData)
+def get_analytics(
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_user),
+):
+    return svc.get_analytics(db)
