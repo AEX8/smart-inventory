@@ -9,6 +9,7 @@ from app.schemas.delivery import (
     DeliveryCreate, DeliveryStatusUpdate,
     DeliveryOut, DeliveryListOut, STATUS_TRANSITIONS,
 )
+from app.models.stock_movement import StockMovement
 
 
 # helpers
@@ -109,10 +110,21 @@ def update_status(
     if payload.notes:
         delivery.notes = payload.notes
 
+    # when delivered, automatically update stock
+    if payload.status == "delivered":
+        product = db.query(Product).filter(Product.id == delivery.product_id).first()
+        if product:
+            product.quantity += delivery.quantity
+            db.add(StockMovement(
+                product_id=product.id,
+                delta=delivery.quantity,
+                reason="restock",
+                created_by=None,
+            ))
+
     db.commit()
     db.refresh(delivery)
     return _to_out(delivery)
-
 
 def delete_delivery(delivery_id: uuid.UUID, db: Session) -> None:
     delivery = _get_or_404(delivery_id, db)
