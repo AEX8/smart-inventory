@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { authApi } from '../api/auth'
+import { Link } from 'react-router-dom'
 
 const Login = () => {
   const { login } = useAuth()
@@ -62,6 +63,10 @@ const Login = () => {
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
+        <p className="text-xs text-gray-400 text-center mt-6">
+          Don't have an account?{' '}
+          <Link to="/register" className="text-blue-600 hover:underline">Create one</Link>
+        </p>
       </div>
     </div>
   )

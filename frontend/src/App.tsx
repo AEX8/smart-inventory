@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard'
 import Inventory from './pages/Inventory'
 import Deliveries from './pages/Deliveries'
 import Suppliers from './pages/Suppliers'
+import Register from './pages/Register'
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth()
@@ -29,6 +30,7 @@ const AppRoutes = () => {
       <Route path="/inventory" element={<ProtectedRoute><Inventory /></ProtectedRoute>} />
       <Route path="/deliveries" element={<ProtectedRoute><Deliveries /></ProtectedRoute>} />
       <Route path="/suppliers" element={<ProtectedRoute><Suppliers /></ProtectedRoute>} />
+      <Route path="/register" element={<Register />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
