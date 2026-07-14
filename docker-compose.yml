@@ -57,6 +57,23 @@ services:
     profiles:
       - tools
 
+  celery_worker:
+    build: ./backend
+    container_name: inventory_celery
+    command: celery -A app.workers.tasks worker --loglevel=info --concurrency=2
+    volumes:
+      - ./backend:/app
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/inventory_db
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=local_dev_secret_change_in_prod
+      - ENVIRONMENT=development
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
 volumes:
   postgres_data:
   redis_data:
