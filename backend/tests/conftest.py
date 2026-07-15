@@ -1,3 +1,4 @@
+import os
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -8,7 +9,10 @@ from app.core.security import hash_password
 from app.models.user import User
 
 # use a separate test database
-TEST_DATABASE_URL = "postgresql://postgres:postgres@db:5432/inventory_test"
+TEST_DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://postgres:postgres@db:5432/inventory_test"
+)
 
 engine = create_engine(TEST_DATABASE_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
