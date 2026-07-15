@@ -14,7 +14,6 @@ email-validator==2.2.0
 
 # ML (v2 — install now so the env is ready)
 scikit-learn==1.5.2
-prophet==1.1.6
 xgboost==2.1.1
 pandas==2.2.3
 numpy==1.26.4

@@ -1,19 +1,12 @@
-import os
-import joblib
-import pandas as pd
 import numpy as np
+import pandas as pd
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from app.models.stock_movement import StockMovement
 from app.models.product import Product
 
 
-MODEL_DIR = "/tmp/ml_models"
-os.makedirs(MODEL_DIR, exist_ok=True)
-
-
 def _get_movement_df(product_id: str, db: Session) -> pd.DataFrame:
-    """Pull stock movements for a product and return as a daily aggregated DataFrame."""
     movements = (
         db.query(StockMovement)
         .filter(StockMovement.product_id == product_id)
@@ -24,14 +17,7 @@ def _get_movement_df(product_id: str, db: Session) -> pd.DataFrame:
     if not movements:
         return pd.DataFrame()
 
-    rows = [
-        {
-            "ds": m.created_at.date(),
-            "delta": m.delta,
-        }
-        for m in movements
-    ]
-
+    rows = [{"ds": m.created_at.date(), "delta": m.delta} for m in movements]
     df = pd.DataFrame(rows)
     df["ds"] = pd.to_datetime(df["ds"])
     df = df.groupby("ds")["delta"].sum().reset_index()
@@ -39,13 +25,19 @@ def _get_movement_df(product_id: str, db: Session) -> pd.DataFrame:
     return df
 
 
+def _make_features(df: pd.DataFrame) -> pd.DataFrame:
+    """Create lag features for XGBoost."""
+    df = df.copy()
+    for lag in [1, 2, 3, 7]:
+        df[f"lag_{lag}"] = df["y"].shift(lag)
+    df["rolling_mean_7"] = df["y"].rolling(7).mean()
+    df["rolling_std_7"] = df["y"].rolling(7).std()
+    df["day_of_week"] = df["ds"].dt.dayofweek
+    return df.dropna()
+
+
 def run_forecast(product_id: str, db: Session) -> dict:
-    """
-    Run demand forecast for a product.
-    Returns predicted stockout date, days remaining,
-    recommended reorder qty, and 14-day forecast series.
-    """
-    from prophet import Prophet
+    from xgboost import XGBRegressor
 
     product = db.query(Product).filter(Product.id == product_id).first()
     if not product:
@@ -53,62 +45,74 @@ def run_forecast(product_id: str, db: Session) -> dict:
 
     df = _get_movement_df(str(product_id), db)
 
-    # need at least 2 data points for Prophet
-    if len(df) < 2:
-        return {
-            "product_id": str(product_id),
-            "product_name": product.name,
-            "current_stock": product.quantity,
-            "predicted_stockout_date": None,
-            "days_remaining": None,
-            "recommended_reorder_qty": None,
-            "confidence": 0.0,
-            "forecast_series": [],
-            "anomaly_flag": False,
-            "generated_at": datetime.utcnow().isoformat(),
-            "insufficient_data": True,
-        }
+    insufficient = {
+        "product_id": str(product_id),
+        "product_name": product.name,
+        "current_stock": product.quantity,
+        "predicted_stockout_date": None,
+        "days_remaining": None,
+        "recommended_reorder_qty": None,
+        "confidence": 0.0,
+        "forecast_series": [],
+        "anomaly_flag": False,
+        "generated_at": datetime.utcnow().isoformat(),
+        "insufficient_data": True,
+    }
 
-    # fit Prophet on daily stock deltas
-    model = Prophet(
-        daily_seasonality=False,
-        weekly_seasonality=True,
-        yearly_seasonality=False,
-        changepoint_prior_scale=0.05,
-        interval_width=0.8,
-    )
-    model.fit(df)
+    if len(df) < 10:
+        return insufficient
 
-    # forecast 30 days ahead
-    future = model.make_future_dataframe(periods=30)
-    forecast = model.predict(future)
+    featured = _make_features(df)
+    if len(featured) < 5:
+        return insufficient
 
-    # simulate running stock from current quantity
-    future_forecast = forecast[forecast["ds"] > pd.Timestamp.now()][["ds", "yhat"]].head(30)
-    running_stock = product.quantity
-    stockout_date = None
+    feature_cols = ["lag_1", "lag_2", "lag_3", "lag_7", "rolling_mean_7", "rolling_std_7", "day_of_week"]
+    X = featured[feature_cols]
+    y = featured["y"]
+
+    model = XGBRegressor(n_estimators=50, max_depth=3, random_state=42, verbosity=0)
+    model.fit(X, y)
+
+    # forecast 14 days ahead using rolling prediction
+    last_values = list(df["y"].values[-7:])
     forecast_series = []
+    running_stock = float(product.quantity)
+    stockout_date = None
 
-    for _, row in future_forecast.iterrows():
-        running_stock += row["yhat"]
+    for i in range(14):
+        future_date = datetime.utcnow() + timedelta(days=i + 1)
+        lag_1 = last_values[-1] if len(last_values) >= 1 else 0
+        lag_2 = last_values[-2] if len(last_values) >= 2 else 0
+        lag_3 = last_values[-3] if len(last_values) >= 3 else 0
+        lag_7 = last_values[-7] if len(last_values) >= 7 else 0
+        rolling_mean = np.mean(last_values[-7:])
+        rolling_std = np.std(last_values[-7:])
+        dow = future_date.weekday()
+
+        features = np.array([[lag_1, lag_2, lag_3, lag_7, rolling_mean, rolling_std, dow]])
+        predicted_delta = float(model.predict(features)[0])
+
+        running_stock += predicted_delta
+        last_values.append(predicted_delta)
+
         forecast_series.append({
-            "date": row["ds"].strftime("%Y-%m-%d"),
+            "date": future_date.strftime("%Y-%m-%d"),
             "predicted_stock": max(0, round(running_stock)),
         })
+
         if running_stock <= 0 and stockout_date is None:
-            stockout_date = row["ds"].strftime("%Y-%m-%d")
+            stockout_date = future_date.strftime("%Y-%m-%d")
 
     days_remaining = None
     if stockout_date:
         delta = datetime.strptime(stockout_date, "%Y-%m-%d") - datetime.utcnow()
         days_remaining = max(0, delta.days)
 
-    # recommended reorder = avg daily consumption * (lead time + 7 day buffer)
-    avg_daily_consumption = abs(df[df["y"] < 0]["y"].mean()) if len(df[df["y"] < 0]) > 0 else 0
+    neg_movements = df[df["y"] < 0]["y"]
+    avg_daily_consumption = abs(neg_movements.mean()) if len(neg_movements) > 0 else 0
     lead_time = product.supplier.lead_time_days if product.supplier else 7
     recommended_reorder_qty = round(avg_daily_consumption * (lead_time + 7)) if avg_daily_consumption > 0 else None
 
-    # confidence based on data points available
     confidence = min(1.0, len(df) / 30)
 
     return {
@@ -120,7 +124,7 @@ def run_forecast(product_id: str, db: Session) -> dict:
         "recommended_reorder_qty": recommended_reorder_qty,
         "confidence": round(confidence, 2),
         "forecast_series": forecast_series,
-        "anomaly_flag": False,  # updated by anomaly detection
+        "anomaly_flag": False,
         "generated_at": datetime.utcnow().isoformat(),
         "insufficient_data": False,
     }
