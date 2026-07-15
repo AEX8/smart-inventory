@@ -51,4 +51,5 @@ jobs:
           SECRET_KEY: ci_test_secret_key
           ACCESS_TOKEN_EXPIRE_MINUTES: 60
           ENVIRONMENT: test
+          PYTHONPATH: /home/runner/work/smart-inventory/smart-inventory/backend
         run: pytest -v --tb=short
