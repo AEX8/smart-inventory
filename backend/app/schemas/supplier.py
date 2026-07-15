@@ -6,7 +6,7 @@ from pydantic import BaseModel, EmailStr
 
 class SupplierCreate(BaseModel):
     name: str
-    contact_email: Optional[EmailStr] = None
+    contact_email: EmailStr
     lead_time_days: int = 7
 
 

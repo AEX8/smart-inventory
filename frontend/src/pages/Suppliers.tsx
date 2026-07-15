@@ -25,19 +25,27 @@ const SupplierForm = ({
 
   const mutation = useMutation({
     mutationFn: () => initial
-      ? suppliersApi.update(initial.id, {
-          ...form,
-          contact_email: form.contact_email || undefined,
-        })
-      : suppliersApi.create({
-          ...form,
-          contact_email: form.contact_email || undefined,
-        }),
+    ? suppliersApi.update(initial.id, {
+        ...form,
+        contact_email: form.contact_email || undefined,
+      })
+    : suppliersApi.create({
+        name: form.name,
+        contact_email: form.contact_email,
+        lead_time_days: form.lead_time_days,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['suppliers'] })
       onClose()
     },
-    onError: (err: any) => setError(err.response?.data?.detail ?? 'Something went wrong'),
+    onError: (err: any) => {
+      const detail = err.response?.data?.detail
+      if (Array.isArray(detail)) {
+        setError(detail[0]?.msg ?? 'Invalid input')
+      } else {
+        setError(detail ?? 'Something went wrong')
+      }
+    },
   })
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -55,11 +63,12 @@ const SupplierForm = ({
         required
       />
       <Input
-        label="Contact email (optional)"
+        label="Contact email"
         type="email"
         value={form.contact_email}
         onChange={(e) => set('contact_email', e.target.value)}
         placeholder="orders@supplier.com"
+        required
       />
       <Input
         label="Lead time (days)"
@@ -74,7 +83,7 @@ const SupplierForm = ({
         <Button
           type="submit"
           loading={mutation.isPending}
-          disabled={!form.name}
+          disabled={!form.name || !form.contact_email}
           className="flex-1"
         >
           {initial ? 'Save changes' : 'Add supplier'}
