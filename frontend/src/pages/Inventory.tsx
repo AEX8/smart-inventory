@@ -9,6 +9,9 @@ import SlideOver from '../components/ui/SlideOver'
 import Modal from '../components/ui/Modal'
 import { Button } from '../components/ui/FormFields'
 import ProductForm, { StockAdjustForm, EditProductForm } from '../components/inventory/ProductForm'
+import { forecastApi } from '../api/forecast'
+import type { ForecastOut } from '../types/forecast'
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All statuses' },
@@ -48,6 +51,13 @@ const Inventory = () => {
     queryKey: ['movements', liveProduct?.id],
     queryFn: () => inventoryApi.movements(liveProduct!.id),
     enabled: !!liveProduct,
+  })
+
+  const { data: forecast } = useQuery({
+    queryKey: ['forecast', liveProduct?.id],
+    queryFn: () => forecastApi.getProduct(liveProduct!.id),
+    enabled: !!liveProduct,
+    staleTime: 5 * 60 * 1000, // 5 min matches Redis TTL
   })
 
   const deleteMutation = useMutation({
@@ -279,6 +289,113 @@ const Inventory = () => {
                     ))}
                   </div>
                 </div>
+                {/* Forecast */}
+      {forecast && !forecast.insufficient_data && (
+        <div>
+          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+            14-day forecast
+          </h3>
+
+          {/* Key metrics */}
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="text-xs text-gray-400">Stockout in</p>
+              <p className={`text-sm font-semibold mt-0.5 ${
+                forecast.days_remaining !== null && forecast.days_remaining <= 7
+                  ? 'text-red-600'
+                  : 'text-gray-900'
+              }`}>
+                {forecast.days_remaining !== null
+                  ? `${forecast.days_remaining} days`
+                  : 'Not predicted'}
+              </p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-3">
+              <p className="text-xs text-gray-400">Reorder qty</p>
+              <p className="text-sm font-semibold text-gray-900 mt-0.5">
+                {forecast.recommended_reorder_qty ?? '—'} units
+              </p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-3 col-span-2">
+              <p className="text-xs text-gray-400">Confidence</p>
+              <div className="flex items-center gap-2 mt-1">
+                <div className="flex-1 bg-gray-200 rounded-full h-1.5">
+                  <div
+                    className="h-1.5 rounded-full bg-blue-500"
+                    style={{ width: `${forecast.confidence * 100}%` }}
+                  />
+                </div>
+                <span className="text-xs text-gray-500">
+                  {Math.round(forecast.confidence * 100)}%
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Forecast chart */}
+          {forecast.forecast_series.length > 0 && (
+            <ResponsiveContainer width="100%" height={140}>
+              <LineChart data={forecast.forecast_series}>
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 10, fill: '#9ca3af' }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => new Date(v).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })}
+                  interval={6}
+                />
+                <YAxis
+                  tick={{ fontSize: 10, fill: '#9ca3af' }}
+                  axisLine={false}
+                  tickLine={false}
+                  width={30}
+                />
+                <Tooltip
+                  contentStyle={{
+                    fontSize: 11,
+                    border: '1px solid #e5e7eb',
+                    borderRadius: 8,
+                    boxShadow: 'none',
+                  }}
+                  labelFormatter={(v) => new Date(v).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })}
+                />
+                <ReferenceLine
+                  y={liveProduct.threshold}
+                  stroke="#f59e0b"
+                  strokeDasharray="3 3"
+                  label={{ value: 'min', fontSize: 10, fill: '#f59e0b' }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="predicted_stock"
+                  name="Predicted stock"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+
+          {forecast.anomaly_flag && (
+            <div className="mt-3 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+              <p className="text-xs text-red-600 font-medium">⚠ Anomaly detected</p>
+              <p className="text-xs text-red-400 mt-0.5">
+                Unusual stock movement pattern detected for this product
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {forecast?.insufficient_data && (
+        <div className="bg-gray-50 rounded-lg p-3">
+          <p className="text-xs text-gray-500 font-medium">Forecast unavailable</p>
+          <p className="text-xs text-gray-400 mt-0.5">
+            Not enough movement history to generate a forecast. Keep tracking stock and it'll appear automatically.
+          </p>
+        </div>
+      )}
               </div>
             )}
           </>
