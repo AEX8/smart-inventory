@@ -21,7 +21,7 @@ dist/
 # ML artifacts
 *.pkl
 *.joblib
-models/
+/models/
 
 # IDE
 .vscode/
