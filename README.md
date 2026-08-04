@@ -49,9 +49,3 @@ docker compose exec backend pytest -v
 ```
 
 ---
-
-## Roadmap
-
-- [ ] Kubernetes (minikube → EKS)
-- [ ] Terraform + AWS deployment
-- [ ] GitHub Actions CD pipeline
