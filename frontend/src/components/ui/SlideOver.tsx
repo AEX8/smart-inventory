@@ -30,11 +30,15 @@ const SlideOver = ({ open, onClose, title, children, width = 'md' }: SlideOverPr
 
       {/* Panel */}
       <div className={cn(
-        'fixed right-0 top-0 h-full bg-white border-l border-gray-200 z-30',
+        'fixed right-0 top-0 h-full border-l z-30',
         'transform transition-transform duration-200 ease-out flex flex-col',
         width === 'md' ? 'w-[480px]' : 'w-[360px]',
         open ? 'translate-x-0' : 'translate-x-full'
-      )}>
+        
+      )}
+        style={{ background: '#f0f1f5', borderLeft: '1px solid #e2e4ec' }}
+      >
+        
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
           <button

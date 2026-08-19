@@ -66,9 +66,11 @@ export const Button = ({
   ...props
 }: ButtonProps) => {
   const variants = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300',
+    // primary: 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300',
+    primary: 'text-white disabled:opacity-50',
     secondary: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50',
     danger: 'bg-red-600 text-white hover:bg-red-700 disabled:bg-red-300',
+    
   }
   const sizes = {
     sm: 'px-3 py-1.5 text-xs',
@@ -83,6 +85,7 @@ export const Button = ({
         sizes[size],
         className
       )}
+      style={variant === 'primary' ? { background: '#4f5ef7' } : {}}
       disabled={loading || props.disabled}
       {...props}
     >
