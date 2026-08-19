@@ -1,11 +1,7 @@
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import {
-  LayoutDashboard,
-  Package,
-  Truck,
-  Building2,
-  LogOut,
-  BarChart2
+  LayoutDashboard, Package, Truck,
+  Building2, BarChart2, LogOut,
 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import { cn } from '../../utils/cn'
@@ -20,19 +16,17 @@ const navItems = [
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { user, logout } = useAuth()
-  const location = useLocation()
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <aside className="w-56 bg-white border-r border-gray-200 flex flex-col fixed h-full z-10">
+    <div className="min-h-screen flex" style={{ background: '#f4f5f7' }}>
+      <aside className="w-56 flex flex-col fixed h-full z-10" style={{ background: '#1a1f36', borderRight: '1px solid #232840' }}>
         {/* Logo */}
-        <div className="px-5 py-5 border-b border-gray-100">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Package size={14} className="text-white" />
+        <div className="px-5 py-5" style={{ borderBottom: '1px solid #232840' }}>
+          <div className="flex items-center gap-2.5">
+            <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: '#4f5ef7' }}>
+              <Package size={12} className="text-white" />
             </div>
-            <span className="font-semibold text-gray-900 text-sm">SmartInventory</span>
+            <span className="text-sm font-semibold" style={{ color: '#e2e4f0' }}>SmartInventory</span>
           </div>
         </div>
 
@@ -46,35 +40,44 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               className={({ isActive }) =>
                 cn(
                   'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors',
-                  isActive
-                    ? 'bg-blue-50 text-blue-700 font-medium'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  isActive ? 'text-white' : 'text-gray-400 hover:text-gray-200'
                 )
               }
+              style={({ isActive }) => isActive
+                ? { background: '#2d3561', color: '#ffffff' }
+                : {}
+              }
             >
-              <Icon size={16} />
-              {label}
+              {({ isActive }) => (
+                <>
+                  <Icon size={15} color={isActive ? '#818cf8' : undefined} />
+                  {label}
+                </>
+              )}
             </NavLink>
           ))}
         </nav>
 
         {/* User */}
-        <div className="px-3 py-4 border-t border-gray-100">
+        <div className="px-3 py-4" style={{ borderTop: '1px solid #232840' }}>
           <div className="px-3 py-2 mb-1">
-            <p className="text-xs font-medium text-gray-900 truncate">{user?.email}</p>
-            <p className="text-xs text-gray-400 capitalize">{user?.role.replace('_', ' ')}</p>
+            <p className="text-xs font-medium truncate" style={{ color: '#9da3c8' }}>{user?.email}</p>
+            <p className="text-xs capitalize mt-0.5" style={{ color: '#4a5080' }}>{user?.role.replace('_', ' ')}</p>
           </div>
           <button
             onClick={logout}
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors w-full"
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm w-full transition-colors"
+            style={{ color: '#4a5080' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#9da3c8')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#4a5080')}
           >
-            <LogOut size={16} />
+            <LogOut size={14} />
             Sign out
           </button>
         </div>
       </aside>
 
-      {/* Main content */}
+      {/* Main */}
       <main className="flex-1 ml-56 min-h-screen">
         <div className="p-8">
           {children}
