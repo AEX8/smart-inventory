@@ -18,15 +18,23 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const { user, logout } = useAuth()
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#f4f5f7' }}>
-      <aside className="w-56 flex flex-col fixed h-full z-10" style={{ background: '#1a1f36', borderRight: '1px solid #232840' }}>
+    <div className="min-h-screen flex" style={{ background: '#f0f2f5' }}>
+      <aside
+        className="w-60 flex flex-col fixed h-full z-10"
+        style={{ background: '#ffffff', borderRight: '2px solid #0552a1' }}
+      >
         {/* Logo */}
-        <div className="px-5 py-5" style={{ borderBottom: '1px solid #232840' }}>
+        <div className="px-5 py-5" style={{ borderBottom: '1px solid #e8eaf0' }}>
           <div className="flex items-center gap-2.5">
-            <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: '#4f5ef7' }}>
+            <div
+              className="w-6 h-6 rounded-md flex items-center justify-center"
+              style={{ background: '#0552a1' }}
+            >
               <Package size={12} className="text-white" />
             </div>
-            <span className="text-sm font-semibold" style={{ color: '#e2e4f0' }}>SmartInventory</span>
+            <span className="text-sm font-semibold" style={{ color: '#0d1b2a' }}>
+              SmartInventory
+            </span>
           </div>
         </div>
 
@@ -37,20 +45,16 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               key={to}
               to={to}
               end={to === '/'}
-              className={({ isActive }) =>
-                cn(
-                  'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors',
-                  isActive ? 'text-white' : 'text-gray-400 hover:text-gray-200'
-                )
-              }
-              style={({ isActive }) => isActive
-                ? { background: '#2d3561', color: '#ffffff' }
-                : {}
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors"
+              style={({ isActive }) =>
+                isActive
+                  ? { background: '#e8f0fb', color: '#0552a1', fontWeight: 500 }
+                  : { color: '#5a6478' }
               }
             >
               {({ isActive }) => (
                 <>
-                  <Icon size={15} color={isActive ? '#818cf8' : undefined} />
+                  <Icon size={15} color={isActive ? '#0552a1' : '#8a94a8'} />
                   {label}
                 </>
               )}
@@ -59,17 +63,21 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </nav>
 
         {/* User */}
-        <div className="px-3 py-4" style={{ borderTop: '1px solid #232840' }}>
+        <div className="px-3 py-4" style={{ borderTop: '1px solid #e8eaf0' }}>
           <div className="px-3 py-2 mb-1">
-            <p className="text-xs font-medium truncate" style={{ color: '#9da3c8' }}>{user?.email}</p>
-            <p className="text-xs capitalize mt-0.5" style={{ color: '#4a5080' }}>{user?.role.replace('_', ' ')}</p>
+            <p className="text-xs font-medium truncate" style={{ color: '#0d1b2a' }}>
+              {user?.email}
+            </p>
+            <p className="text-xs capitalize mt-0.5" style={{ color: '#8a94a8' }}>
+              {user?.role.replace('_', ' ')}
+            </p>
           </div>
           <button
             onClick={logout}
             className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm w-full transition-colors"
-            style={{ color: '#4a5080' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#9da3c8')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#4a5080')}
+            style={{ color: '#8a94a8' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#0552a1')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#8a94a8')}
           >
             <LogOut size={14} />
             Sign out
@@ -78,7 +86,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       </aside>
 
       {/* Main */}
-      <main className="flex-1 ml-56 min-h-screen">
+      <main className="flex-1 ml-60 min-h-screen">
         <div className="p-8">
           {children}
         </div>
