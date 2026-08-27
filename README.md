@@ -1,3 +1,5 @@
+![Smart Inventory & Delivery Tracker](./smart_inventory_banner_v2.png)
+
 # Smart Inventory & Delivery Tracker
 
 Production-grade inventory and delivery tracking platform for warehouse operations, with ML-powered demand forecasting and anomaly detection.
