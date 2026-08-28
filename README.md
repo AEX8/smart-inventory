@@ -13,11 +13,11 @@ Production-grade inventory and delivery tracking platform for warehouse operatio
 ## Features
 
 - Inventory CRUD with stock movement audit trail and reorder alerts
-- Inbound delivery tracking with enforced state machine — marking delivered auto-updates stock
-- ML demand forecasting per product (XGBoost) — predicts stockout date and reorder quantity
+- Inbound delivery tracking with enforced state machine: marking delivered auto-updates stock
+- ML demand forecasting per product (XGBoost): predicts stockout date and reorder quantity
 - Anomaly detection (Isolation Forest) flags unusual stock patterns
-- Analytics dashboard — stock by category, delivery breakdown, 30-day movement trend
-- Role-based access control — admin, warehouse staff, driver
+- Analytics dashboard: stock by category, delivery breakdown, 30-day movement trend
+- Role-based access control: admin, warehouse staff, driver
 - Background jobs via Celery + Redis with response caching
 - 60 tests, CI via GitHub Actions
 
