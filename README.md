@@ -1,5 +1,5 @@
 <p>
-  <img src="./logos/sm.png" width="200" alt="Smart Inventory & Delivery Tracker" />
+  <img src="./logos/sm.png" width="280" alt="Smart Inventory & Delivery Tracker" />
 </p>
 
 # Smart Inventory & Delivery Tracker
