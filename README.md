@@ -1,4 +1,4 @@
-![Smart Inventory & Delivery Tracker](./smart_inventory_banner_v2.png)
+![Smart Inventory & Delivery Tracker](./smart_inventory_logo_square.png)
 
 # Smart Inventory & Delivery Tracker
 
