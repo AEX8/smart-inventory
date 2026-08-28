@@ -1,4 +1,6 @@
-![Smart Inventory & Delivery Tracker](./logos/sm.png)
+<p>
+  <img src="./logos/sm.svg" width="200" alt="Smart Inventory & Delivery Tracker" />
+</p>
 
 # Smart Inventory & Delivery Tracker
 
