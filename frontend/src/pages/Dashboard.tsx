@@ -5,6 +5,7 @@ import { deliveriesApi } from '../api/deliveries'
 import { inventoryApi } from '../api/inventory'
 import StatCard from '../components/ui/StatCard'
 import Badge, { deliveryStatusBadge, stockStatusBadge } from '../components/ui/Badge'
+import ProductThumb from '../components/ui/ProductThumb'
 
 const Dashboard = () => {
   const { data: summary } = useQuery({
@@ -83,7 +84,17 @@ const Dashboard = () => {
                 const badge = deliveryStatusBadge(d.status)
                 return (
                   <tr key={d.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-5 py-3 text-gray-900 font-medium">{d.product_name ?? '—'}</td>
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-3">
+                        <ProductThumb name={d.product_name} src={d.product_image_url} />
+                        <div className="min-w-0">
+                          <p className="font-medium truncate" style={{ color: 'var(--text)' }}>{d.product_name ?? '—'}</p>
+                          {d.product_sku && (
+                            <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>{d.product_sku}</p>
+                          )}
+                        </div>
+                      </div>
+                    </td>
                     <td className="px-5 py-3 text-gray-500">{d.quantity}</td>
                     <td className="px-5 py-3"><Badge variant={badge.variant}>{badge.label}</Badge></td>
                     <td className="px-5 py-3 text-gray-500">
@@ -108,10 +119,13 @@ const Dashboard = () => {
             {lowStock?.items.map((p) => {
               const badge = stockStatusBadge(p.quantity, p.threshold)
               return (
-                <div key={p.id} className="px-5 py-3 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{p.name}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{p.quantity} / {p.threshold} min</p>
+                <div key={p.id} className="px-5 py-3 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <ProductThumb name={p.name} src={p.image_url} />
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate" style={{ color: 'var(--text)' }}>{p.name}</p>
+                      <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>{p.quantity} / {p.threshold} min</p>
+                    </div>
                   </div>
                   <Badge variant={badge.variant}>{badge.label}</Badge>
                 </div>

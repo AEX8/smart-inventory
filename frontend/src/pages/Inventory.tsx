@@ -5,6 +5,7 @@ import { inventoryApi } from '../api/inventory'
 import { useAuth } from '../hooks/useAuth'
 import type { ProductOut } from '../types/product'
 import Badge, { stockStatusBadge } from '../components/ui/Badge'
+import ProductThumb from '../components/ui/ProductThumb'
 import SlideOver from '../components/ui/SlideOver'
 import Modal from '../components/ui/Modal'
 import { Button } from '../components/ui/FormFields'
@@ -150,7 +151,12 @@ const Inventory = () => {
                   onClick={() => { setSelectedProduct(product); setShowEditForm(false) }}
                   className="hover:bg-gray-50 transition-colors cursor-pointer"
                 >
-                  <td className="px-5 py-3 font-medium text-gray-900">{product.name}</td>
+                  <td className="px-5 py-3">
+                    <div className="flex items-center gap-3">
+                      <ProductThumb name={product.name} src={product.image_url} />
+                      <span className="font-medium" style={{ color: 'var(--text)' }}>{product.name}</span>
+                    </div>
+                  </td>
                   <td className="px-5 py-3 text-gray-400 font-mono text-xs">{product.sku}</td>
                   <td className="px-5 py-3 text-gray-500">{product.category ?? '—'}</td>
                   <td className="px-5 py-3 text-gray-900">
@@ -216,6 +222,7 @@ const Inventory = () => {
               />
             ) : (
               <div className="space-y-6">
+                <ProductThumb name={liveProduct.name} src={liveProduct.image_url} size={112} />
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-gray-50 rounded-lg p-3">
                     <p className="text-xs text-gray-400">SKU</p>

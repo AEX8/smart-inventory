@@ -5,6 +5,7 @@ import { deliveriesApi } from '../api/deliveries'
 import { useAuth } from '../hooks/useAuth'
 import type { DeliveryOut } from '../types/delivery'
 import Badge, { deliveryStatusBadge } from '../components/ui/Badge'
+import ProductThumb from '../components/ui/ProductThumb'
 import SlideOver from '../components/ui/SlideOver'
 import Modal from '../components/ui/Modal'
 import { Button } from '../components/ui/FormFields'
@@ -124,7 +125,17 @@ const Deliveries = () => {
                   onClick={() => setSelected(d)}
                   className="hover:bg-gray-50 transition-colors cursor-pointer"
                 >
-                  <td className="px-5 py-3 font-medium text-gray-900">{d.product_name ?? '—'}</td>
+                  <td className="px-5 py-3">
+                    <div className="flex items-center gap-3">
+                      <ProductThumb name={d.product_name} src={d.product_image_url} />
+                      <div className="min-w-0">
+                        <p className="font-medium truncate" style={{ color: 'var(--text)' }}>{d.product_name ?? '—'}</p>
+                        {d.product_sku && (
+                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>{d.product_sku}</p>
+                        )}
+                      </div>
+                    </div>
+                  </td>
                   <td className="px-5 py-3 text-gray-500">{d.quantity}</td>
                   <td className="px-5 py-3">
                     <Badge variant={badge.variant}>{badge.label}</Badge>
