@@ -7,18 +7,24 @@ type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 
 export const Input = ({ label, error, className, ...props }: InputProps) => (
   <div>
-    <label className="block text-xs font-medium text-gray-700 mb-1">{label}</label>
+    <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text)' }}>{label}</label>
     <input
       className={cn(
-        'w-full border rounded-lg px-3 py-2 text-sm text-gray-900',
-        'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+        'w-full rounded px-3 py-2 text-sm transition-colors',
+        'focus:outline-none',
         'placeholder:text-gray-400',
-        error ? 'border-red-300' : 'border-gray-300',
         className
       )}
+      style={{
+        background: 'var(--surface)',
+        border: error ? '1px solid var(--danger)' : '1px solid var(--border)',
+        color: 'var(--text)',
+      }}
+      onFocus={e => (e.currentTarget.style.borderColor = 'var(--primary)')}
+      onBlur={e => (e.currentTarget.style.borderColor = error ? 'var(--danger)' : 'var(--border)')}
       {...props}
     />
-    {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+    {error && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{error}</p>}
   </div>
 )
 
@@ -31,14 +37,16 @@ type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
 
 export const Select = ({ label, error, options, placeholder, className, ...props }: SelectProps) => (
   <div>
-    <label className="block text-xs font-medium text-gray-700 mb-1">{label}</label>
+    <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text)' }}>{label}</label>
     <select
-      className={cn(
-        'w-full border rounded-lg px-3 py-2 text-sm text-gray-900 bg-white',
-        'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-        error ? 'border-red-300' : 'border-gray-300',
-        className
-      )}
+      className={cn('w-full rounded px-3 py-2 text-sm focus:outline-none', className)}
+      style={{
+        background: 'var(--surface)',
+        border: error ? '1px solid var(--danger)' : '1px solid var(--border)',
+        color: 'var(--text)',
+      }}
+      onFocus={e => (e.currentTarget.style.borderColor = 'var(--primary)')}
+      onBlur={e => (e.currentTarget.style.borderColor = error ? 'var(--danger)' : 'var(--border)')}
       {...props}
     >
       {placeholder && <option value="">{placeholder}</option>}
@@ -46,7 +54,7 @@ export const Select = ({ label, error, options, placeholder, className, ...props
         <option key={o.value} value={o.value}>{o.label}</option>
       ))}
     </select>
-    {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+    {error && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{error}</p>}
   </div>
 )
 
@@ -65,26 +73,28 @@ export const Button = ({
   type = 'button',
   ...props
 }: ButtonProps) => {
-  const variants = {
-    primary: 'text-white disabled:opacity-50',
-    secondary: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50',
-    danger: 'bg-red-600 text-white hover:bg-red-700 disabled:bg-red-300',
-    
+  const base = 'rounded font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 inline-flex items-center justify-center'
+  const sizes = { sm: 'px-3 py-1.5 text-xs', md: 'px-4 py-2 text-sm' }
+
+  const styles: Record<string, React.CSSProperties> = {
+    primary: { background: 'var(--primary)', color: 'var(--on-primary)', border: 'none' },
+    secondary: { background: 'transparent', color: 'var(--text)', border: '1px solid var(--border)' },
+    danger: { background: 'var(--danger)', color: 'white', border: 'none' },
   }
-  const sizes = {
-    sm: 'px-3 py-1.5 text-xs',
-    md: 'px-4 py-2 text-sm',
-  }
+
   return (
     <button
       type={type}
-      className={cn(
-        'rounded-lg font-medium transition-colors disabled:cursor-not-allowed',
-        variants[variant],
-        sizes[size],
-        className
-      )}
-      style={variant === 'primary' ? { background: '#0552a1' } : {}}
+      className={cn(base, sizes[size], className)}
+      style={styles[variant]}
+      onMouseEnter={e => {
+        if (variant === 'primary') e.currentTarget.style.background = 'var(--primary-hover)'
+        if (variant === 'secondary') e.currentTarget.style.background = 'var(--surface-subtle)'
+      }}
+      onMouseLeave={e => {
+        if (variant === 'primary') e.currentTarget.style.background = 'var(--primary)'
+        if (variant === 'secondary') e.currentTarget.style.background = 'transparent'
+      }}
       disabled={loading || props.disabled}
       {...props}
     >

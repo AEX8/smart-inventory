@@ -36,7 +36,7 @@ const SlideOver = ({ open, onClose, title, children, width = 'md' }: SlideOverPr
         open ? 'translate-x-0' : 'translate-x-full'
         
       )}
-        style={{ background: '#ffffff', borderLeft: '1px solid #e8eaf0' }}
+      style={{ background: 'var(--surface)', borderLeft: '1px solid var(--border)', boxShadow: '-4px 0 24px rgba(0,0,0,0.06)' }}
       >
         
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">

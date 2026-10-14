@@ -1,5 +1,3 @@
-import { cn } from '../../utils/cn'
-
 type StatCardProps = {
   label: string
   value: number | string
@@ -9,28 +7,23 @@ type StatCardProps = {
 }
 
 const StatCard = ({ label, value, icon, alert, sublabel }: StatCardProps) => (
-  <div
-    className="bg-white rounded-xl p-5 flex items-start justify-between"
-    style={{
-      border: '1px solid #e5e7eb',
-      borderLeft: alert ? '3px solid #ef4444' : '3px solid #4f5ef7',
-    }}
-  >
+  <div className="flex-1 px-8 py-6 flex items-start gap-4" style={{ borderRight: '1px solid var(--border)' }}>
+    <div className="mt-1" style={{ color: alert ? 'var(--danger)' : 'var(--text-secondary)' }}>
+      {icon}
+    </div>
     <div>
-      <p className="text-xs text-gray-400 mb-1 uppercase tracking-wide font-medium">{label}</p>
-      <p className={cn(
-        'text-3xl font-semibold',
-        alert ? 'text-red-600' : 'text-gray-900'
-      )}>
+      <p className="text-sm mb-1" style={{ color: 'var(--text-secondary)' }}>{label}</p>
+      <p
+        className="tabular-nums leading-none"
+        style={{
+          fontFamily: 'Libre Baskerville, Georgia, serif',
+          fontSize: '38px',
+          color: alert ? 'var(--danger)' : 'var(--text)',
+        }}
+      >
         {value}
       </p>
-      {sublabel && <p className="text-xs text-gray-400 mt-1">{sublabel}</p>}
-    </div>
-    <div className={cn(
-      'p-2 rounded-lg',
-      alert ? 'bg-red-50 text-red-400' : 'bg-indigo-50 text-indigo-500'
-    )}>
-      {icon}
+      {sublabel && <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>{sublabel}</p>}
     </div>
   </div>
 )

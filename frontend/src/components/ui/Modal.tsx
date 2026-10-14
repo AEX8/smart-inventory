@@ -19,21 +19,20 @@ const Modal = ({ open, onClose, title, children }: ModalProps) => {
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/20" onClick={onClose} />
       <div className={cn(
-        'relative bg-white rounded-xl border border-gray-200 shadow-lg',
-        'w-full max-w-md mx-4 z-50'
-      )}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+        'relative rounded-md z-50',
+        'w-full max-w-md mx-4'
+      )}
+      style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}
+      >
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
+          <h2 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>{title}</h2>
+          <button onClick={onClose} style={{ color: 'var(--text-secondary)' }}>
             <X size={16} />
           </button>
         </div>
         <div className="px-6 py-5">{children}</div>
       </div>
-    </div>
   )
 }
 
