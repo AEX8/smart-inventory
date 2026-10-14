@@ -60,7 +60,7 @@ const Deliveries = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">Deliveries</h1>
+          <h1 className="font-serif text-[34px] leading-tight" style={{ color: 'var(--text)' }}>Deliveries</h1>
           <p className="text-sm text-gray-500 mt-0.5">{data?.total ?? 0} total</p>
         </div>
         {user?.role !== 'driver' && (

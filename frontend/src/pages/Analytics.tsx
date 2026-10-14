@@ -18,7 +18,7 @@ const Analytics = () => {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">Analytics</h1>
+          <h1 className="font-serif text-[34px] leading-tight" style={{ color: 'var(--text)' }}>Analytics</h1>
           <p className="text-sm text-gray-500 mt-0.5">Loading...</p>
         </div>
       </div>
@@ -34,7 +34,7 @@ const Analytics = () => {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-semibold text-gray-900">Analytics</h1>
+        <h1 className="font-serif text-[34px] leading-tight" style={{ color: 'var(--text)' }}>Analytics</h1>
         <p className="text-sm text-gray-500 mt-0.5">Stock and delivery insights</p>
       </div>
 

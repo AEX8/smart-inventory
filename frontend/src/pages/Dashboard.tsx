@@ -26,7 +26,7 @@ const Dashboard = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-xl font-semibold text-gray-900">Overview</h1>
+        <h1 className="font-serif text-[34px] leading-tight" style={{ color: 'var(--text)' }}>Overview</h1>
         <p className="text-sm text-gray-500 mt-0.5">Live inventory and delivery status</p>
       </div>
 
@@ -59,7 +59,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2 bg-white border border-gray-200 rounded-xl overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-900">Recent deliveries</h2>
+            <h2 className="font-serif text-[24px] leading-tight" style={{ color: 'var(--text)' }}>Recent deliveries</h2>
             <a href="/deliveries" className="text-xs text-blue-600 hover:underline">View all</a>
           </div>
           <table className="w-full text-sm">
@@ -98,7 +98,7 @@ const Dashboard = () => {
 
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-900">Reorder alerts</h2>
+            <h2 className="font-serif text-[24px] leading-tight" style={{ color: 'var(--text)' }}>Reorder alerts</h2>
             <a href="/inventory" className="text-xs text-blue-600 hover:underline">View all</a>
           </div>
           <div className="divide-y divide-gray-50">
