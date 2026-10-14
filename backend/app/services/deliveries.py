@@ -29,6 +29,8 @@ def _to_out(delivery: Delivery) -> DeliveryOut:
     out = DeliveryOut.model_validate(delivery)
     if delivery.product:
         out.product_name = delivery.product.name
+        out.product_sku = delivery.product.sku
+        out.product_image_url = delivery.product.image_url
     return out
 
 

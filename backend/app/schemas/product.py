@@ -1,9 +1,26 @@
 import uuid
 from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel, field_validator
+from typing import Annotated, Optional
+from pydantic import AfterValidator, BaseModel, Field, field_validator
 
 VALID_REASONS = {"restock", "sold", "damaged", "returned", "audit_correction"}
+
+
+def _validate_image_url(v: Optional[str]) -> Optional[str]:
+    # only allow site-relative paths or http(s) URLs, blocks javascript: and data: URLs
+    if v is None:
+        return v
+    v = v.strip()
+    if not v:
+        return None
+    if v.startswith("/") and not v.startswith("//"):
+        return v
+    if v.startswith(("https://", "http://")):
+        return v
+    raise ValueError("image_url must be a path starting with / or an http(s) URL")
+
+
+ImageUrl = Annotated[Optional[str], Field(max_length=500), AfterValidator(_validate_image_url)]
 
 
 class SupplierOut(BaseModel):
@@ -19,6 +36,7 @@ class ProductCreate(BaseModel):
     name: str
     sku: str
     category: Optional[str] = None
+    image_url: ImageUrl = None
     initial_stock: int = 0
     threshold: int = 10
     supplier_id: Optional[uuid.UUID] = None
@@ -27,6 +45,7 @@ class ProductCreate(BaseModel):
 class ProductUpdate(BaseModel):
     name: Optional[str] = None
     category: Optional[str] = None
+    image_url: ImageUrl = None
     threshold: Optional[int] = None
     supplier_id: Optional[uuid.UUID] = None
 
@@ -36,6 +55,7 @@ class ProductOut(BaseModel):
     name: str
     sku: str
     category: Optional[str]
+    image_url: Optional[str]
     quantity: int
     threshold: int
     supplier_id: Optional[uuid.UUID]

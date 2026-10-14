@@ -74,6 +74,7 @@ def create_product(payload: ProductCreate, db: Session, current_user: User) -> P
         name=payload.name,
         sku=payload.sku,
         category=payload.category,
+        image_url=payload.image_url,
         quantity=payload.initial_stock,
         threshold=payload.threshold,
         supplier_id=payload.supplier_id,
