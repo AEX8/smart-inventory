@@ -7,12 +7,12 @@ type StatCardProps = {
 }
 
 const StatCard = ({ label, value, icon, alert, sublabel }: StatCardProps) => (
-  <div className="flex-1 px-8 py-6 flex items-start gap-4" style={{ borderRight: '1px solid var(--border)' }}>
+  <div className="flex-1 px-8 py-6 flex items-start gap-4 border-r border-[var(--border)] last:border-r-0 first:pl-0">
     <div className="mt-1" style={{ color: alert ? 'var(--danger)' : 'var(--text-secondary)' }}>
       {icon}
     </div>
     <div>
-      <p className="text-sm mb-1" style={{ color: 'var(--text-secondary)' }}>{label}</p>
+      <p className="text-base mb-2" style={{ color: 'var(--text)' }}>{label}</p>
       <p
         className="tabular-nums leading-none"
         style={{
@@ -23,7 +23,7 @@ const StatCard = ({ label, value, icon, alert, sublabel }: StatCardProps) => (
       >
         {value}
       </p>
-      {sublabel && <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>{sublabel}</p>}
+      {sublabel && <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>{sublabel}</p>}
     </div>
   </div>
 )
