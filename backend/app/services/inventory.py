@@ -53,9 +53,18 @@ def list_products(
             query = query.filter(Product.quantity > 0, Product.quantity <= Product.threshold)
         elif stock_status == "healthy":
             query = query.filter(Product.quantity > Product.threshold)
+        elif stock_status == "reorder":
+            # low and critical together
+            query = query.filter(Product.quantity <= Product.threshold)
+
+    if stock_status == "reorder":
+        # most urgent first: lowest share of threshold remaining
+        order = (Product.quantity * 1.0 / func.nullif(Product.threshold, 0), Product.name)
+    else:
+        order = (Product.name,)
 
     total = query.count()
-    items = query.order_by(Product.name).offset((page - 1) * page_size).limit(page_size).all()
+    items = query.order_by(*order).offset((page - 1) * page_size).limit(page_size).all()
 
     return ProductListOut(
         items=[ProductOut.model_validate(p) for p in items],

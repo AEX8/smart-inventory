@@ -190,3 +190,19 @@ def test_delete_product_as_admin(client, auth_headers, product):
 def test_delete_product_as_staff(client, staff_headers, product):
     res = client.delete(f"/inventory/products/{product['id']}", headers=staff_headers)
     assert res.status_code == 403
+
+def test_list_products_reorder_filter(client, auth_headers):
+    for name, sku, stock, threshold in [
+        ("Healthy", "R-1", 50, 10),
+        ("Low", "R-2", 8, 10),
+        ("Out", "R-3", 0, 10),
+        ("Very low", "R-4", 2, 20),
+    ]:
+        client.post("/inventory/products", json={
+            "name": name, "sku": sku, "initial_stock": stock, "threshold": threshold,
+        }, headers=auth_headers)
+
+    res = client.get("/inventory/products?stock_status=reorder", headers=auth_headers)
+    assert res.status_code == 200
+    # includes out of stock, excludes healthy, most urgent first
+    assert [p["sku"] for p in res.json()["items"]] == ["R-3", "R-4", "R-2"]
