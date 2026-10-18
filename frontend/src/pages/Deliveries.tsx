@@ -129,7 +129,7 @@ const Deliveries = () => {
                     <div className="flex items-center gap-3">
                       <ProductThumb name={d.product_name} src={d.product_image_url} />
                       <div className="min-w-0">
-                        <p className="font-medium truncate" style={{ color: 'var(--text)' }}>{d.product_name ?? '—'}</p>
+                        <p className="font-medium truncate" style={{ color: 'var(--text)' }}>{d.product_name ?? 'Unknown product'}</p>
                         {d.product_sku && (
                           <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>{d.product_sku}</p>
                         )}
@@ -141,7 +141,7 @@ const Deliveries = () => {
                     <Badge variant={badge.variant}>{badge.label}</Badge>
                   </td>
                   <td className="px-5 py-3 text-gray-500">
-                    {d.eta ? new Date(d.eta).toLocaleDateString() : '—'}
+                    {d.eta ? new Date(d.eta).toLocaleDateString() : 'Not set'}
                   </td>
                   <td className="px-5 py-3 text-gray-400 text-xs">
                     {new Date(d.created_at).toLocaleDateString()}
@@ -198,7 +198,7 @@ const Deliveries = () => {
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="text-xs text-gray-400">Product</p>
-                <p className="text-sm font-medium text-gray-900 mt-0.5">{liveDelivery.product_name ?? '—'}</p>
+                <p className="text-sm font-medium text-gray-900 mt-0.5">{liveDelivery.product_name ?? 'Unknown product'}</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="text-xs text-gray-400">Quantity</p>
@@ -215,7 +215,7 @@ const Deliveries = () => {
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="text-xs text-gray-400">ETA</p>
                 <p className="text-sm font-medium text-gray-900 mt-0.5">
-                  {liveDelivery.eta ? new Date(liveDelivery.eta).toLocaleDateString() : '—'}
+                  {liveDelivery.eta ? new Date(liveDelivery.eta).toLocaleDateString() : 'Not set'}
                 </p>
               </div>
             </div>

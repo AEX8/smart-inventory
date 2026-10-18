@@ -38,29 +38,29 @@ const Analytics = () => {
         <p className="text-sm text-gray-500 mt-0.5">Stock and delivery insights</p>
       </div>
 
-      {/* Top row — category stock + delivery breakdown */}
+      {/* Top row: category stock + delivery breakdown */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
         {/* Category stock */}
         <div className="bg-white border border-gray-200 rounded-xl p-5">
-          <h2 className="text-sm font-semibold text-gray-900 mb-1">Stock by category</h2>
-          <p className="text-xs text-gray-400 mb-5">Total units across all products per category</p>
+          <h2 className="font-serif text-xl mb-1" style={{ color: 'var(--text)' }}>Stock by category</h2>
+          <p className="text-sm mb-5" style={{ color: 'var(--text-secondary)' }}>Total units across all products per category</p>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={data?.category_stock} barSize={32}>
               <XAxis
                 dataKey="category"
-                tick={{ fontSize: 11, fill: '#9ca3af' }}
+                tick={{ fontSize: 13, fill: '#62666A' }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fontSize: 11, fill: '#9ca3af' }}
+                tick={{ fontSize: 13, fill: '#62666A' }}
                 axisLine={false}
                 tickLine={false}
               />
               <Tooltip
                 contentStyle={{
-                  fontSize: 12,
+                  fontSize: 13,
                   border: '1px solid #e5e7eb',
                   borderRadius: 8,
                   boxShadow: 'none',
@@ -74,10 +74,10 @@ const Analytics = () => {
 
         {/* Delivery status breakdown */}
         <div className="bg-white border border-gray-200 rounded-xl p-5">
-          <h2 className="text-sm font-semibold text-gray-900 mb-1">Delivery status breakdown</h2>
-          <p className="text-xs text-gray-400 mb-5">Distribution of all deliveries by current status</p>
+          <h2 className="font-serif text-xl mb-1" style={{ color: 'var(--text)' }}>Delivery status breakdown</h2>
+          <p className="text-sm mb-5" style={{ color: 'var(--text-secondary)' }}>Distribution of all deliveries by current status</p>
           {pieData.length === 0 ? (
-            <div className="h-[220px] flex items-center justify-center text-xs text-gray-400">
+            <div className="h-[220px] flex items-center justify-center text-sm text-gray-500">
               No deliveries yet
             </div>
           ) : (
@@ -98,7 +98,7 @@ const Analytics = () => {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    fontSize: 12,
+                    fontSize: 13,
                     border: '1px solid #e5e7eb',
                     borderRadius: 8,
                     boxShadow: 'none',
@@ -107,7 +107,7 @@ const Analytics = () => {
                 <Legend
                   iconType="circle"
                   iconSize={8}
-                  wrapperStyle={{ fontSize: 12, color: '#6b7280' }}
+                  wrapperStyle={{ fontSize: 13, color: '#62666A' }}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -117,10 +117,10 @@ const Analytics = () => {
 
       {/* Stock movement trend */}
       <div className="bg-white border border-gray-200 rounded-xl p-5">
-        <h2 className="text-sm font-semibold text-gray-900 mb-1">Stock movement — last 30 days</h2>
-        <p className="text-xs text-gray-400 mb-5">Daily restocks vs reductions across all products</p>
+        <h2 className="font-serif text-xl mb-1" style={{ color: 'var(--text)' }}>Stock movement, last 30 days</h2>
+        <p className="text-sm mb-5" style={{ color: 'var(--text-secondary)' }}>Daily restocks vs reductions across all products</p>
         {!data?.movement_trend.length ? (
-          <div className="h-[220px] flex items-center justify-center text-xs text-gray-400">
+          <div className="h-[220px] flex items-center justify-center text-sm text-gray-500">
             No movement data yet
           </div>
         ) : (
@@ -128,19 +128,19 @@ const Analytics = () => {
             <LineChart data={data?.movement_trend}>
               <XAxis
                 dataKey="date"
-                tick={{ fontSize: 11, fill: '#9ca3af' }}
+                tick={{ fontSize: 13, fill: '#62666A' }}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={(v) => new Date(v).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })}
               />
               <YAxis
-                tick={{ fontSize: 11, fill: '#9ca3af' }}
+                tick={{ fontSize: 13, fill: '#62666A' }}
                 axisLine={false}
                 tickLine={false}
               />
               <Tooltip
                 contentStyle={{
-                  fontSize: 12,
+                  fontSize: 13,
                   border: '1px solid #e5e7eb',
                   borderRadius: 8,
                   boxShadow: 'none',
@@ -166,7 +166,7 @@ const Analytics = () => {
               <Legend
                 iconType="circle"
                 iconSize={8}
-                wrapperStyle={{ fontSize: 12, color: '#6b7280' }}
+                wrapperStyle={{ fontSize: 13, color: '#62666A' }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -175,17 +175,17 @@ const Analytics = () => {
 
       {/* Low stock products */}
       <div className="bg-white border border-gray-200 rounded-xl p-5">
-        <h2 className="text-sm font-semibold text-gray-900 mb-1">Products needing reorder</h2>
-        <p className="text-xs text-gray-400 mb-5">Sorted by how far below threshold — most urgent first</p>
+        <h2 className="font-serif text-xl mb-1" style={{ color: 'var(--text)' }}>Products needing reorder</h2>
+        <p className="text-sm mb-5" style={{ color: 'var(--text-secondary)' }}>Most urgent first, sorted by how far below threshold</p>
         {!data?.low_stock_products.length ? (
-          <p className="text-xs text-gray-400">All products are above their reorder threshold</p>
+          <p className="text-sm text-gray-500">All products are above their reorder threshold</p>
         ) : (
           <div className="space-y-3">
             {data.low_stock_products.map((p) => (
               <div key={p.name}>
                 <div className="flex items-center justify-between mb-1">
-                  <p className="text-sm font-medium text-gray-900">{p.name}</p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-base font-medium" style={{ color: 'var(--text)' }}>{p.name}</p>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                     {p.quantity} / {p.threshold} min
                   </p>
                 </div>

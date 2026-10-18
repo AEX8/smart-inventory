@@ -34,7 +34,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
         <StatCard
           label="Total products"
-          value={summary?.total_products ?? '—'}
+          value={summary?.total_products ?? '...'}
           icon={<Package size={18} />}
         />
         <StatCard
@@ -46,12 +46,12 @@ const Dashboard = () => {
         />
         <StatCard
           label="Pending deliveries"
-          value={summary?.pending_deliveries ?? '—'}
+          value={summary?.pending_deliveries ?? '...'}
           icon={<Truck size={18} />}
         />
         <StatCard
           label="Delayed"
-          value={summary?.delayed_deliveries ?? '—'}
+          value={summary?.delayed_deliveries ?? '...'}
           icon={<AlertTriangle size={18} />}
           alert={(summary?.delayed_deliveries ?? 0) > 0}
         />
@@ -88,7 +88,7 @@ const Dashboard = () => {
                       <div className="flex items-center gap-3">
                         <ProductThumb name={d.product_name} src={d.product_image_url} />
                         <div className="min-w-0">
-                          <p className="font-medium truncate" style={{ color: 'var(--text)' }}>{d.product_name ?? '—'}</p>
+                          <p className="font-medium truncate" style={{ color: 'var(--text)' }}>{d.product_name ?? 'Unknown product'}</p>
                           {d.product_sku && (
                             <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>{d.product_sku}</p>
                           )}
@@ -98,7 +98,7 @@ const Dashboard = () => {
                     <td className="px-5 py-3 text-gray-500">{d.quantity}</td>
                     <td className="px-5 py-3"><Badge variant={badge.variant}>{badge.label}</Badge></td>
                     <td className="px-5 py-3 text-gray-500">
-                      {d.eta ? new Date(d.eta).toLocaleDateString() : '—'}
+                      {d.eta ? new Date(d.eta).toLocaleDateString() : 'Not set'}
                     </td>
                   </tr>
                 )

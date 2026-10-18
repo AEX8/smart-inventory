@@ -163,7 +163,7 @@ const Suppliers = () => {
             {data?.items.map((s) => (
               <tr key={s.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-5 py-3 font-medium text-gray-900">{s.name}</td>
-                <td className="px-5 py-3 text-gray-500">{s.contact_email ?? '—'}</td>
+                <td className="px-5 py-3 text-gray-500">{s.contact_email ?? 'Not provided'}</td>
                 <td className="px-5 py-3 text-gray-500">{s.lead_time_days}d</td>
                 <td className="px-5 py-3 text-gray-400 text-xs">
                   {new Date(s.created_at).toLocaleDateString()}

@@ -158,7 +158,7 @@ const Inventory = () => {
                     </div>
                   </td>
                   <td className="px-5 py-3 text-gray-400 font-mono text-xs">{product.sku}</td>
-                  <td className="px-5 py-3 text-gray-500">{product.category ?? '—'}</td>
+                  <td className="px-5 py-3 text-gray-500">{product.category ?? 'Uncategorised'}</td>
                   <td className="px-5 py-3 text-gray-900">
                     {product.quantity}
                     <span className="text-gray-400 text-xs ml-1">/ {product.threshold} min</span>
@@ -211,7 +211,7 @@ const Inventory = () => {
       <SlideOver
         open={!!liveProduct && !showAdjustModal}
         onClose={() => { setSelectedProduct(null); setShowEditForm(false) }}
-        title={showEditForm ? `Edit — ${liveProduct?.name}` : liveProduct?.name ?? ''}
+        title={showEditForm ? `Edit ${liveProduct?.name}` : liveProduct?.name ?? ''}
       >
         {liveProduct && (
           <>
@@ -230,7 +230,7 @@ const Inventory = () => {
                   </div>
                   <div className="bg-gray-50 rounded-lg p-3">
                     <p className="text-xs text-gray-400">Category</p>
-                    <p className="text-sm font-medium text-gray-900 mt-0.5">{liveProduct.category ?? '—'}</p>
+                    <p className="text-sm font-medium text-gray-900 mt-0.5">{liveProduct.category ?? 'Uncategorised'}</p>
                   </div>
                   <div className="bg-gray-50 rounded-lg p-3">
                     <p className="text-xs text-gray-400">Current stock</p>
@@ -320,7 +320,7 @@ const Inventory = () => {
             <div className="bg-gray-50 rounded-lg p-3">
               <p className="text-xs text-gray-400">Reorder qty</p>
               <p className="text-sm font-semibold text-gray-900 mt-0.5">
-                {forecast.recommended_reorder_qty ?? '—'} units
+                {forecast.recommended_reorder_qty != null ? `${forecast.recommended_reorder_qty} units` : 'Not available'}
               </p>
             </div>
             <div className="bg-gray-50 rounded-lg p-3 col-span-2">

@@ -32,7 +32,7 @@
   --neutral-bg: #ECEEF0;
 
   font-family: 'Source Sans 3', system-ui, sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--text);
   background: var(--background);
 }

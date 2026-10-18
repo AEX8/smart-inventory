@@ -137,8 +137,8 @@ export const StatusUpdateForm = ({ delivery, onClose }: StatusUpdateFormProps) =
     return (
       <div className="space-y-4">
         <p className="text-sm text-gray-500">
-          This delivery is <span className="font-medium text-gray-900">{delivery.status}</span> —
-          a terminal status and cannot be updated further.
+          This delivery is <span className="font-medium text-gray-900">{delivery.status}</span>,
+          a final status, so it cannot be updated further.
         </p>
         <Button type="button" variant="secondary" onClick={onClose} className="w-full">Close</Button>
       </div>
@@ -154,7 +154,7 @@ export const StatusUpdateForm = ({ delivery, onClose }: StatusUpdateFormProps) =
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="bg-gray-50 rounded-lg px-4 py-3">
         <p className="text-xs text-gray-500">Updating delivery for</p>
-        <p className="text-sm font-medium text-gray-900 mt-0.5">{delivery.product_name ?? '—'}</p>
+        <p className="text-sm font-medium text-gray-900 mt-0.5">{delivery.product_name ?? 'Unknown product'}</p>
         <p className="text-xs text-gray-400 mt-1">
           Current status: <span className="capitalize">{delivery.status.replace('_', ' ')}</span>
         </p>
