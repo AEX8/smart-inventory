@@ -86,7 +86,7 @@ export const DeliveryForm = ({ onClose }: DeliveryFormProps) => {
         placeholder="Any additional info..."
       />
 
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-sm" style={{ color: 'var(--danger)' }}>{error}</p>}
 
       <div className="flex gap-2 pt-2">
         <Button type="button" variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
@@ -120,6 +120,8 @@ export const StatusUpdateForm = ({ delivery, onClose }: StatusUpdateFormProps) =
     mutationFn: () => deliveriesApi.updateStatus(delivery.id, status, notes || undefined),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['deliveries'] })
+      // delivered deliveries add stock, so inventory views are stale too
+      queryClient.invalidateQueries({ queryKey: ['inventory'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard-summary'] })
       onClose()
     },
@@ -136,8 +138,8 @@ export const StatusUpdateForm = ({ delivery, onClose }: StatusUpdateFormProps) =
   if (allowed.length === 0) {
     return (
       <div className="space-y-4">
-        <p className="text-sm text-gray-500">
-          This delivery is <span className="font-medium text-gray-900">{delivery.status}</span>,
+        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+          This delivery is <span className="font-medium" style={{ color: 'var(--text)' }}>{deliveryStatusBadge(delivery.status).label.toLowerCase()}</span>,
           a final status, so it cannot be updated further.
         </p>
         <Button type="button" variant="secondary" onClick={onClose} className="w-full">Close</Button>
@@ -152,11 +154,11 @@ export const StatusUpdateForm = ({ delivery, onClose }: StatusUpdateFormProps) =
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="bg-gray-50 rounded-lg px-4 py-3">
-        <p className="text-xs text-gray-500">Updating delivery for</p>
-        <p className="text-sm font-medium text-gray-900 mt-0.5">{delivery.product_name ?? 'Unknown product'}</p>
-        <p className="text-xs text-gray-400 mt-1">
-          Current status: <span className="capitalize">{delivery.status.replace('_', ' ')}</span>
+      <div className="rounded px-4 py-3" style={{ background: 'var(--surface-subtle)' }}>
+        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Updating delivery for</p>
+        <p className="text-sm font-medium mt-0.5" style={{ color: 'var(--text)' }}>{delivery.product_name ?? 'Unknown product'}</p>
+        <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
+          Current status: {deliveryStatusBadge(delivery.status).label}
         </p>
       </div>
 
@@ -173,7 +175,7 @@ export const StatusUpdateForm = ({ delivery, onClose }: StatusUpdateFormProps) =
         placeholder="Reason for status change..."
       />
 
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-sm" style={{ color: 'var(--danger)' }}>{error}</p>}
 
       <div className="flex gap-2 pt-2">
         <Button type="button" variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
