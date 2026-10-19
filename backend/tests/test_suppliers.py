@@ -124,3 +124,13 @@ def test_delete_supplier_with_products(client, auth_headers, supplier, db):
 def test_delete_supplier_as_staff(client, staff_headers, supplier):
     res = client.delete(f"/suppliers/{supplier['id']}", headers=staff_headers)
     assert res.status_code == 403
+
+def test_list_suppliers_includes_product_count(client, auth_headers, supplier):
+    for sku in ("PC-1", "PC-2"):
+        client.post("/inventory/products", json={
+            "name": f"Product {sku}", "sku": sku, "supplier_id": supplier["id"],
+        }, headers=auth_headers)
+
+    items = client.get("/suppliers", headers=auth_headers).json()["items"]
+    match = next(s for s in items if s["id"] == supplier["id"])
+    assert match["product_count"] == 2

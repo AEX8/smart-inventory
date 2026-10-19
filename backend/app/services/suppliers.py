@@ -1,7 +1,9 @@
 import uuid
 from typing import Optional
 from fastapi import HTTPException, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
+from app.models.product import Product
 from app.models.supplier import Supplier
 from app.schemas.supplier import SupplierCreate, SupplierUpdate, SupplierOut, SupplierListOut
 
@@ -14,14 +16,22 @@ def _get_or_404(supplier_id: uuid.UUID, db: Session) -> Supplier:
 
 
 def list_suppliers(db: Session, search: Optional[str] = None) -> SupplierListOut:
-    query = db.query(Supplier)
+    # count linked products in the same query to avoid N+1 lookups
+    product_count = func.count(Product.id).label("product_count")
+    query = (
+        db.query(Supplier, product_count)
+        .outerjoin(Product, Product.supplier_id == Supplier.id)
+        .group_by(Supplier.id)
+    )
     if search:
         query = query.filter(Supplier.name.ilike(f"%{search}%"))
-    items = query.order_by(Supplier.name).all()
-    return SupplierListOut(
-        items=[SupplierOut.model_validate(s) for s in items],
-        total=len(items),
-    )
+    rows = query.order_by(Supplier.name).all()
+    items = []
+    for supplier, count in rows:
+        out = SupplierOut.model_validate(supplier)
+        out.product_count = count
+        items.append(out)
+    return SupplierListOut(items=items, total=len(items))
 
 
 def create_supplier(payload: SupplierCreate, db: Session) -> SupplierOut:
