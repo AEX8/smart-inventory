@@ -4,6 +4,7 @@ export interface SupplierOut {
     contact_email: string | null
     lead_time_days: number
     created_at: string
+    product_count: number
   }
   
   export interface SupplierListOut {

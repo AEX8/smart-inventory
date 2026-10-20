@@ -45,6 +45,10 @@ class DeliveryOut(BaseModel):
     id: uuid.UUID
     product_id: uuid.UUID
     product_name: Optional[str] = None   # joined from product
+    product_sku: Optional[str] = None
+    product_image_url: Optional[str] = None
+    product_category: Optional[str] = None
+    supplier_name: Optional[str] = None
     quantity: int
     status: str
     eta: Optional[datetime]

@@ -1,5 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Sans+3:wght@300;400;500;600&display=swap');
 @import "tailwindcss";
 
 * {
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root {
+  --background: #F5F2EB;
+  --surface: #FFFDFA;
+  --surface-subtle: #EEEBE4;
+
+  --primary: #344D68;
+  --primary-hover: #283E56;
+  --primary-soft: #E7ECF1;
+  --on-primary: #FFFFFF;
+
+  --text: #20272B;
+  --text-secondary: #62666A;
+  --border: #DEDAD2;
+
+  --success: #386140;
+  --success-bg: #E8F1E4;
+  --warning: #936000;
+  --warning-bg: #FFF0D6;
+  --danger: #B43F32;
+  --danger-bg: #FBE8E2;
+  --info: #355D7D;
+  --info-bg: #E7EFF6;
+  --neutral: #59626B;
+  --neutral-bg: #ECEEF0;
+
+  font-family: 'Source Sans 3', system-ui, sans-serif;
+  font-size: 16px;
+  color: var(--text);
+  background: var(--background);
+}
+
+body {
+  background: var(--background);
+  color: var(--text);
+}
+
+.font-serif {
+  font-family: 'Libre Baskerville', Georgia, serif;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }

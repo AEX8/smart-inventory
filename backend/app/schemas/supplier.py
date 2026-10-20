@@ -22,6 +22,7 @@ class SupplierOut(BaseModel):
     contact_email: Optional[str]
     lead_time_days: int
     created_at: datetime
+    product_count: int = 0
 
     model_config = {"from_attributes": True}
 

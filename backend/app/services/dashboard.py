@@ -110,14 +110,20 @@ def get_analytics(db: Session) -> AnalyticsData:
         .order_by(func.date(StockMovement.created_at))
         .all()
     )
-    movement_trend = [
-        MovementPoint(
-            date=str(r.date),
-            restocked=int(r.restocked or 0),
-            reduced=int(r.reduced or 0),
-        )
-        for r in movement_rows
-    ]
+    # fill days with no movements with zeros so the chart has a continuous x-axis
+    by_date = {str(r.date): r for r in movement_rows}
+    today = datetime.utcnow().date()
+    movement_trend = []
+    for offset in range(29, -1, -1):
+        day = str(today - timedelta(days=offset))
+        r = by_date.get(day)
+        movement_trend.append(MovementPoint(
+            date=day,
+            restocked=int(r.restocked or 0) if r else 0,
+            reduced=int(r.reduced or 0) if r else 0,
+        ))
+    if not movement_rows:
+        movement_trend = []
 
     return AnalyticsData(
         category_stock=category_stock,

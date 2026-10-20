@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, Package, Truck,
-  Building2, BarChart2, LogOut,
+  Building2, BarChart2, LogOut, ChevronRight,
 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import { cn } from '../../utils/cn'
@@ -18,44 +18,51 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const { user, logout } = useAuth()
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#f0f2f5' }}>
+    <div className="min-h-screen flex" style={{ background: 'var(--background)' }}>
       <aside
-        className="w-60 flex flex-col fixed h-full z-10"
-        style={{ background: '#ffffff', borderRight: '2px solid #0552a1' }}
+        className="w-58 flex flex-col fixed h-full z-10"
+        style={{
+          width: '232px',
+          background: 'var(--surface)',
+          borderRight: '1px solid var(--border)',
+        }}
       >
-        {/* Logo */}
-        <div className="px-5 py-5" style={{ borderBottom: '1px solid #e8eaf0' }}>
-          <div className="flex items-center gap-2.5">
+        {/* Identity */}
+        <div className="px-6 py-6" style={{ borderBottom: '1px solid var(--border)' }}>
+          <div className="flex items-center gap-3">
             <div
-              className="w-6 h-6 rounded-md flex items-center justify-center"
-              style={{ background: '#0552a1' }}
+              className="w-7 h-7 rounded flex items-center justify-center flex-shrink-0"
+              style={{ background: 'var(--primary)' }}
             >
-              <Package size={12} className="text-white" />
+              <Package size={13} color="white" />
             </div>
-            <span className="text-sm font-semibold" style={{ color: '#0d1b2a' }}>
-              SmartInventory
-            </span>
+            <div>
+              <p className="text-sm font-semibold leading-tight" style={{ color: 'var(--text)', fontFamily: 'Libre Baskerville, Georgia, serif' }}>
+                SmartInventory
+              </p>
+              <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Hospitality Supply</p>
+            </div>
           </div>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
+        <nav className="flex-1 px-3 py-4 space-y-1">
           {navItems.map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
               to={to}
               end={to === '/'}
-              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors"
+              className="flex items-center gap-3.5 px-4 py-3 rounded text-[16px] font-medium tracking-[0.01em] transition-colors"
               style={({ isActive }) =>
                 isActive
-                  ? { background: '#e8f0fb', color: '#0552a1', fontWeight: 500 }
-                  : { color: '#5a6478' }
+                  ? { background: 'var(--primary)', color: 'white', borderRadius: '5px' }
+                  : { color: 'var(--text)' }
               }
             >
               {({ isActive }) => (
                 <>
-                  <Icon size={15} color={isActive ? '#0552a1' : '#8a94a8'} />
-                  {label}
+                  <Icon size={19} strokeWidth={isActive ? 1.75 : 1.5} />
+                  <span>{label}</span>
                 </>
               )}
             </NavLink>
@@ -63,30 +70,27 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </nav>
 
         {/* User */}
-        <div className="px-3 py-4" style={{ borderTop: '1px solid #e8eaf0' }}>
-          <div className="px-3 py-2 mb-1">
-            <p className="text-xs font-medium truncate" style={{ color: '#0d1b2a' }}>
-              {user?.email}
-            </p>
-            <p className="text-xs capitalize mt-0.5" style={{ color: '#8a94a8' }}>
-              {user?.role.replace('_', ' ')}
-            </p>
+        <div className="px-4 py-4" style={{ borderTop: '1px solid var(--border)' }}>
+          <div className="flex items-center gap-3 px-2 py-2 rounded cursor-pointer hover:bg-gray-50 transition-colors">
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0"
+              style={{ background: 'var(--primary-soft)', color: 'var(--primary)' }}
+            >
+              {user?.email?.[0].toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium truncate" style={{ color: 'var(--text)' }}>{user?.email}</p>
+              <p className="text-xs capitalize" style={{ color: 'var(--text-secondary)' }}>{user?.role.replace('_', ' ')}</p>
+            </div>
+            <button onClick={logout} className="flex-shrink-0" title="Sign out">
+              <LogOut size={14} color="var(--text-secondary)" />
+            </button>
           </div>
-          <button
-            onClick={logout}
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm w-full transition-colors"
-            style={{ color: '#8a94a8' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#0552a1')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#8a94a8')}
-          >
-            <LogOut size={14} />
-            Sign out
-          </button>
         </div>
       </aside>
 
       {/* Main */}
-      <main className="flex-1 ml-60 min-h-screen">
+      <main className="flex-1 min-h-screen" style={{ marginLeft: '232px' }}>
         <div className="p-8">
           {children}
         </div>

@@ -83,7 +83,9 @@ products_data = [
 products = []
 for p_data in products_data:
     supplier = p_data.pop("supplier")
-    product = Product(**p_data, supplier_id=supplier.id)
+    # images live in frontend/public/products, named by lowercase SKU
+    image_url = f"/products/{p_data['sku'].lower()}.webp"
+    product = Product(**p_data, image_url=image_url, supplier_id=supplier.id)
     db.add(product)
     products.append(product)
 
