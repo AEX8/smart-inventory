@@ -37,13 +37,6 @@ cd frontend && npm install && npm run dev
 
 Open `http://localhost:5173`
 
-**Default logins:**
-| Email | Password | Role |
-|---|---|---|
-| admin1@test.com | password123 | Admin |
-| staff1@test.com | password123 | Warehouse Staff |
-| driver1@test.com | password123 | Driver |
-
 ---
 
 ## Testing
