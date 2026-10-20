@@ -22,6 +22,7 @@ export const inventoryApi = {
     name: string
     sku: string
     category?: string
+    image_url?: string
     initial_stock?: number
     threshold?: number
     supplier_id?: string
@@ -33,6 +34,7 @@ export const inventoryApi = {
   update: async (id: string, data: {
     name?: string
     category?: string
+    image_url?: string
     threshold?: number
     supplier_id?: string | null
   }): Promise<ProductOut> => {

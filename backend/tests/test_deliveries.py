@@ -151,3 +151,17 @@ def test_delete_delivery_in_transit(client, auth_headers, delivery):
 def test_delete_delivery_staff_forbidden(client, staff_headers, delivery):
     res = client.delete(f"/deliveries/{delivery['id']}", headers=staff_headers)
     assert res.status_code == 403
+
+def test_delivery_includes_product_and_supplier_details(client, auth_headers, db):
+    from app.models.supplier import Supplier
+    s = Supplier(name="Verre & Co.", lead_time_days=5)
+    db.add(s)
+    db.commit()
+    p = Product(name="Wine Glass", sku="GLS-001", category="Glassware", quantity=10, threshold=5, supplier_id=s.id)
+    db.add(p)
+    db.commit()
+    client.post("/deliveries", json={"product_id": str(p.id), "quantity": 12}, headers=auth_headers)
+
+    item = client.get("/deliveries", headers=auth_headers).json()["items"][0]
+    assert item["product_category"] == "Glassware"
+    assert item["supplier_name"] == "Verre & Co."

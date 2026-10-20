@@ -23,6 +23,7 @@ const ProductForm = ({ onClose }: ProductFormProps) => {
     name: '',
     sku: '',
     category: '',
+    image_url: '',
     initial_stock: 0,
     threshold: 10,
     supplier_id: '',
@@ -44,6 +45,7 @@ const ProductForm = ({ onClose }: ProductFormProps) => {
       name: form.name,
       sku: form.sku,
       category: form.category || undefined,
+      image_url: form.image_url.trim() || undefined,
       initial_stock: form.initial_stock,
       threshold: form.threshold,
       supplier_id: form.supplier_id || undefined,
@@ -87,6 +89,12 @@ const ProductForm = ({ onClose }: ProductFormProps) => {
         value={form.category}
         onChange={(e) => set('category', e.target.value)}
         placeholder="e.g. Electronics"
+      />
+      <Input
+        label="Image URL (optional)"
+        value={form.image_url}
+        onChange={(e) => set('image_url', e.target.value)}
+        placeholder="e.g. /products/crk-001.webp"
       />
       <div className="grid grid-cols-2 gap-3">
         <Input
@@ -223,6 +231,7 @@ export const EditProductForm = ({ product, onClose }: EditProductFormProps) => {
   const [form, setForm] = useState({
     name: product.name,
     category: product.category ?? '',
+    image_url: product.image_url ?? '',
     threshold: product.threshold.toString(),
     supplier_id: product.supplier_id ?? '',
   })
@@ -242,6 +251,8 @@ export const EditProductForm = ({ product, onClose }: EditProductFormProps) => {
     mutationFn: () => inventoryApi.update(product.id, {
       name: form.name,
       category: form.category || undefined,
+      // empty string clears the image on the backend
+      image_url: form.image_url.trim(),
       threshold: Number(form.threshold),
       supplier_id: form.supplier_id || undefined,
     }),
@@ -275,6 +286,12 @@ export const EditProductForm = ({ product, onClose }: EditProductFormProps) => {
         value={form.category}
         onChange={(e) => set('category', e.target.value)}
         placeholder="e.g. Electronics"
+      />
+      <Input
+        label="Image URL (optional)"
+        value={form.image_url}
+        onChange={(e) => set('image_url', e.target.value)}
+        placeholder="e.g. /products/crk-001.webp"
       />
       <Input
         label="Reorder threshold"

@@ -4,6 +4,10 @@ export interface DeliveryOut {
   id: string
   product_id: string
   product_name: string | null
+  product_sku: string | null
+  product_image_url: string | null
+  product_category: string | null
+  supplier_name: string | null
   quantity: number
   status: DeliveryStatus
   eta: string | null

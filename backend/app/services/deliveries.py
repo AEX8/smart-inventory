@@ -16,7 +16,7 @@ from app.models.stock_movement import StockMovement
 def _get_or_404(delivery_id: uuid.UUID, db: Session) -> Delivery:
     delivery = (
         db.query(Delivery)
-        .options(joinedload(Delivery.product))
+        .options(joinedload(Delivery.product).joinedload(Product.supplier))
         .filter(Delivery.id == delivery_id)
         .first()
     )
@@ -29,6 +29,11 @@ def _to_out(delivery: Delivery) -> DeliveryOut:
     out = DeliveryOut.model_validate(delivery)
     if delivery.product:
         out.product_name = delivery.product.name
+        out.product_sku = delivery.product.sku
+        out.product_image_url = delivery.product.image_url
+        out.product_category = delivery.product.category
+        if delivery.product.supplier:
+            out.supplier_name = delivery.product.supplier.name
     return out
 
 
@@ -40,7 +45,7 @@ def list_deliveries(
     status_filter: Optional[str] = None,
     product_id: Optional[uuid.UUID] = None,
 ) -> DeliveryListOut:
-    query = db.query(Delivery).options(joinedload(Delivery.product))
+    query = db.query(Delivery).options(joinedload(Delivery.product).joinedload(Product.supplier))
 
     if status_filter:
         query = query.filter(Delivery.status == status_filter)

@@ -39,6 +39,42 @@ def test_create_product_success(client, auth_headers, supplier):
     assert data["threshold"] == 10
 
 
+def test_create_product_with_image_url(client, auth_headers):
+    res = client.post("/inventory/products", json={
+        "name": "Latte Glass",
+        "sku": "CUP-005",
+        "image_url": "/products/cup-005.webp",
+    }, headers=auth_headers)
+    assert res.status_code == 201
+    assert res.json()["image_url"] == "/products/cup-005.webp"
+
+
+def test_create_product_image_url_optional(client, auth_headers):
+    res = client.post("/inventory/products", json={
+        "name": "Side Plate",
+        "sku": "CRK-002",
+    }, headers=auth_headers)
+    assert res.status_code == 201
+    assert res.json()["image_url"] is None
+
+
+def test_create_product_rejects_unsafe_image_url(client, auth_headers):
+    res = client.post("/inventory/products", json={
+        "name": "Bad Image",
+        "sku": "BAD-001",
+        "image_url": "javascript:alert(1)",
+    }, headers=auth_headers)
+    assert res.status_code == 422
+
+
+def test_update_product_clears_image_url(client, auth_headers, product):
+    pid = product["id"]
+    client.put(f"/inventory/products/{pid}", json={"image_url": "/products/tst-001.webp"}, headers=auth_headers)
+    res = client.put(f"/inventory/products/{pid}", json={"image_url": ""}, headers=auth_headers)
+    assert res.status_code == 200
+    assert res.json()["image_url"] is None
+
+
 def test_create_product_duplicate_sku(client, auth_headers, product):
     res = client.post("/inventory/products", json={
         "name": "Another Product",
@@ -154,3 +190,19 @@ def test_delete_product_as_admin(client, auth_headers, product):
 def test_delete_product_as_staff(client, staff_headers, product):
     res = client.delete(f"/inventory/products/{product['id']}", headers=staff_headers)
     assert res.status_code == 403
+
+def test_list_products_reorder_filter(client, auth_headers):
+    for name, sku, stock, threshold in [
+        ("Healthy", "R-1", 50, 10),
+        ("Low", "R-2", 8, 10),
+        ("Out", "R-3", 0, 10),
+        ("Very low", "R-4", 2, 20),
+    ]:
+        client.post("/inventory/products", json={
+            "name": name, "sku": sku, "initial_stock": stock, "threshold": threshold,
+        }, headers=auth_headers)
+
+    res = client.get("/inventory/products?stock_status=reorder", headers=auth_headers)
+    assert res.status_code == 200
+    # includes out of stock, excludes healthy, most urgent first
+    assert [p["sku"] for p in res.json()["items"]] == ["R-3", "R-4", "R-2"]

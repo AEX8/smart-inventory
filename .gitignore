@@ -37,3 +37,4 @@ Thumbs.db
 .terraform/
 
 k8s/secrets.yaml
+design/product-originals/

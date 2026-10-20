@@ -14,6 +14,8 @@ class Product(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     sku: Mapped[str] = mapped_column(String(100), unique=True, nullable=False, index=True)
     category: Mapped[str | None] = mapped_column(String(100))
+    # reference to the image file (local static path now, object storage URL later)
+    image_url: Mapped[str | None] = mapped_column(String(500))
     quantity: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     threshold: Mapped[int] = mapped_column(Integer, nullable=False, default=10)
     # reorder threshold — alert fires when quantity <= threshold

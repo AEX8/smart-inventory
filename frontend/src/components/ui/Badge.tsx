@@ -7,26 +7,29 @@ type BadgeProps = {
   variant: BadgeVariant
 }
 
-const variants: Record<BadgeVariant, string> = {
-  green: 'bg-green-50 text-green-700 border-green-200',
-  amber: 'bg-amber-50 text-amber-700 border-amber-200',
-  red:   'bg-red-50 text-red-700 border-red-200',
-  blue:  'bg-blue-50 text-blue-700 border-blue-200',
-  gray:  'bg-gray-50 text-gray-600 border-gray-200',
+const variantStyles: Record<BadgeVariant, React.CSSProperties> = {
+  green: { background: 'var(--success-bg)', color: 'var(--success)', border: '1px solid #c3dcc5' },
+  amber: { background: 'var(--warning-bg)', color: 'var(--warning)', border: '1px solid #f0d5a0' },
+  red:   { background: 'var(--danger-bg)',  color: 'var(--danger)',  border: '1px solid #efc4bc' },
+  blue:  { background: 'var(--info-bg)',    color: 'var(--info)',    border: '1px solid #bdd0e0' },
+  gray:  { background: 'var(--neutral-bg)', color: 'var(--neutral)', border: '1px solid #d4d8db' },
 }
 
 const Badge = ({ children, variant }: BadgeProps) => (
-  <span className={cn(
-    'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border',
-    variants[variant]
-  )}>
+  <span
+    className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-medium"
+    style={variantStyles[variant]}
+  >
+    <span
+      className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+      style={{ background: 'currentColor' }}
+    />
     {children}
   </span>
 )
 
 export default Badge
 
-// helpers
 export const stockStatusBadge = (quantity: number, threshold: number) => {
   if (quantity === 0) return { label: 'Critical', variant: 'red' as BadgeVariant }
   if (quantity <= threshold) return { label: 'Low', variant: 'amber' as BadgeVariant }
@@ -40,7 +43,7 @@ export const deliveryStatusBadge = (status: string) => {
     in_transit:  { label: 'In Transit', variant: 'blue' },
     delivered:   { label: 'Delivered',  variant: 'green' },
     delayed:     { label: 'Delayed',    variant: 'amber' },
-    cancelled:   { label: 'Cancelled',  variant: 'red' },
+    cancelled:   { label: 'Cancelled',  variant: 'gray' },
   }
   return map[status] ?? { label: status, variant: 'gray' as BadgeVariant }
 }

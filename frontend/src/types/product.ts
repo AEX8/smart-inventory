@@ -11,6 +11,7 @@ export interface ProductOut {
   name: string
   sku: string
   category: string | null
+  image_url: string | null
   quantity: number
   threshold: number
   supplier_id: string | null

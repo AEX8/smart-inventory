@@ -36,16 +36,18 @@ const SlideOver = ({ open, onClose, title, children, width = 'md' }: SlideOverPr
         open ? 'translate-x-0' : 'translate-x-full'
         
       )}
-        style={{ background: '#ffffff', borderLeft: '1px solid #e8eaf0' }}
+      style={{ background: 'var(--surface)', borderLeft: '1px solid var(--border)', boxShadow: '-4px 0 24px rgba(0,0,0,0.06)' }}
       >
         
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
+        <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: '1px solid var(--border)' }}>
+          <h2 className="font-serif text-xl truncate" style={{ color: 'var(--text)' }}>{title}</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            aria-label="Close"
+            className="transition-colors"
+            style={{ color: 'var(--text-secondary)' }}
           >
-            <X size={16} />
+            <X size={18} />
           </button>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-5">

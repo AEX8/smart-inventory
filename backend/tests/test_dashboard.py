@@ -82,3 +82,12 @@ def test_analytics_low_stock_products(client, auth_headers, seeded_data):
     assert "Product B" in low_stock_names
     assert "Product C" in low_stock_names
     assert "Product A" not in low_stock_names
+
+def test_analytics_movement_trend_fills_30_days(client, auth_headers):
+    client.post("/inventory/products", json={
+        "name": "Trend Product", "sku": "TRD-001", "initial_stock": 40,
+    }, headers=auth_headers)
+    trend = client.get("/dashboard/analytics", headers=auth_headers).json()["movement_trend"]
+    assert len(trend) == 30
+    assert trend[-1]["restocked"] == 40
+    assert sum(p["restocked"] for p in trend[:-1]) == 0
